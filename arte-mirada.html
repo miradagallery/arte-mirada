@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arte Mirada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0E0D0B;
+  --paper: #F7F5F0;
+  --warm-mid: #D4CEBC;
+  --ghost: #8C8880;
+  --rule: rgba(14,13,11,0.1);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  font-weight: 300;
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: hidden;
+  cursor: none;
+}
+
+a { color: inherit; text-decoration: none; cursor: none; }
+
+/* CURSOR */
+#cursor {
+  position: fixed;
+  width: 8px; height: 8px;
+  background: var(--ink);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: width .25s, height .25s, background .25s;
+  mix-blend-mode: multiply;
+}
+#cursor.hover {
+  width: 48px; height: 48px;
+  background: rgba(14,13,11,0.12);
+}
+#cursor.drag {
+  width: 80px; height: 80px;
+  background: rgba(14,13,11,0.07);
+}
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 2.5rem; height: 52px;
+  border-bottom: 0.5px solid var(--rule);
+  background: var(--paper);
+}
+.nav-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 400; font-size: 1.1rem;
+  letter-spacing: 0.18em; text-transform: uppercase;
+}
+.nav-right {
+  display: flex; align-items: center; gap: 2.5rem;
+}
+.nav-link {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ghost);
+  transition: color .2s;
+}
+.nav-link:hover { color: var(--ink); }
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ink); display: inline-block;
+  margin-right: 8px; vertical-align: middle;
+}
+
+/* HERO — full viewport split */
+.hero {
+  margin-top: 52px;
+  height: calc(100vh - 52px);
+  display: grid;
+  grid-template-columns: 1fr 52%;
+  position: relative;
+}
+
+.hero-left {
+  padding: 4rem 3rem 3rem;
+  display: flex; flex-direction: column;
+  justify-content: space-between;
+  border-right: 0.5px solid var(--rule);
+}
+
+.hero-index {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ghost);
+}
+
+.hero-title-block { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300;
+  font-size: clamp(4rem, 7vw, 7rem);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  margin-bottom: 2.5rem;
+}
+.hero-title em { font-style: italic; color: var(--ghost); }
+
+.hero-statement {
+  max-width: 320px;
+  font-size: 13px;
+  color: var(--ghost);
+  line-height: 1.85;
+  border-left: 0.5px solid var(--warm-mid);
+  padding-left: 1.25rem;
+}
+
+.hero-bottom {
+  display: flex; align-items: flex-end;
+  justify-content: space-between;
+}
+.hero-cta {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--ink);
+  padding-bottom: 3px;
+  transition: color .2s;
+}
+.hero-cta:hover { color: var(--ghost); }
+.hero-location {
+  font-size: 11px; letter-spacing: 0.1em;
+  color: var(--ghost); text-transform: uppercase;
+}
+
+/* Hero right — image fills, painting number floats */
+.hero-right {
+  position: relative;
+  overflow: hidden;
+  background: #A89880;
+}
+.hero-img-fill {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 8s ease-out;
+}
+.hero-right:hover .hero-img-fill { transform: scale(1.04); }
+
+.hero-caption {
+  position: absolute; bottom: 2rem; left: 2rem;
+  color: rgba(255,255,255,0.7);
+  font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.hero-num {
+  position: absolute; top: 2rem; right: 2rem;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 5rem; font-weight: 300;
+  color: rgba(255,255,255,0.15);
+  line-height: 1; letter-spacing: -0.03em;
+  pointer-events: none;
+}
+
+/* TICKER */
+.ticker {
+  border-top: 0.5px solid var(--rule);
+  border-bottom: 0.5px solid var(--rule);
+  overflow: hidden; white-space: nowrap; padding: 10px 0;
+}
+.ticker-inner {
+  display: inline-flex; gap: 0;
+  animation: tick 28s linear infinite;
+}
+.ticker-item {
+  font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ghost);
+  padding: 0 3rem;
+}
+.ticker-sep {
+  color: var(--warm-mid); padding: 0;
+  align-self: center; font-size: 8px;
+}
+@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* ── WORKS ── */
+#works { padding: 5rem 0 0; }
+
+.works-header {
+  padding: 0 2.5rem 3rem;
+  display: flex; justify-content: space-between; align-items: baseline;
+  border-bottom: 0.5px solid var(--rule);
+  margin-bottom: 0;
+}
+.section-label {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ghost);
+}
+.works-count {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.5rem; font-weight: 300; color: var(--ghost);
+}
+
+/* Asymmetric masonry-feel grid */
+.works-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto;
+}
+
+.work-item {
+  position: relative; overflow: hidden;
+  border-right: 0.5px solid var(--rule);
+  border-bottom: 0.5px solid var(--rule);
+}
+.work-item:nth-child(3n) { border-right: none; }
+
+/* Varied heights for rhythm */
+.work-item:nth-child(1) { grid-column: span 2; }
+.work-item:nth-child(4) { grid-column: span 2; }
+.work-item:nth-child(6) { grid-column: span 1; }
+
+.work-thumb {
+  width: 100%;
+  display: block;
+  aspect-ratio: unset;
+}
+/* Each item's placeholder has a specific ratio */
+.work-item:nth-child(1) .work-ph { aspect-ratio: 16/7; }
+.work-item:nth-child(2) .work-ph { aspect-ratio: 4/5; }
+.work-item:nth-child(3) .work-ph { aspect-ratio: 4/5; }
+.work-item:nth-child(4) .work-ph { aspect-ratio: 16/7; }
+.work-item:nth-child(5) .work-ph { aspect-ratio: 5/6; }
+.work-item:nth-child(6) .work-ph { aspect-ratio: 5/6; }
+
+.work-ph {
+  width: 100%; display: flex; align-items: center; justify-content: center;
+  transition: transform .6s ease;
+}
+.work-item:hover .work-ph { transform: scale(1.04); }
+
+/* Overlay on hover */
+.work-overlay {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  justify-content: flex-end;
+  padding: 1.5rem;
+  background: linear-gradient(to top, rgba(14,13,11,0.75) 0%, transparent 50%);
+  opacity: 0; transition: opacity .35s;
+}
+.work-item:hover .work-overlay { opacity: 1; }
+.work-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.35rem; font-weight: 300;
+  color: #fff; margin-bottom: 4px;
+}
+.work-meta {
+  font-size: 11px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: rgba(255,255,255,.6);
+  display: flex; justify-content: space-between;
+}
+.work-buy {
+  display: inline-block;
+  margin-top: 10px;
+  font-size: 11px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: #fff;
+  border: 0.5px solid rgba(255,255,255,.5);
+  padding: 6px 14px;
+  transition: background .2s, border-color .2s;
+}
+.work-buy:hover { background: rgba(255,255,255,.15); border-color: #fff; }
+
+/* ── EDITORIAL BREAK ── */
+.editorial {
+  display: grid; grid-template-columns: 1fr 1fr;
+  border-top: 0.5px solid var(--rule);
+  border-bottom: 0.5px solid var(--rule);
+  min-height: 55vh;
+}
+.editorial-img {
+  background: #7A7060;
+  border-right: 0.5px solid var(--rule);
+  overflow: hidden; position: relative;
+  display: flex; align-items: center; justify-content: center;
+}
+.editorial-text {
+  padding: 4rem 3.5rem;
+  display: flex; flex-direction: column; justify-content: center;
+}
+.editorial-eyebrow {
+  font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ghost);
+  margin-bottom: 2rem;
+}
+.editorial-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(2rem, 3vw, 3.2rem);
+  line-height: 1.15; letter-spacing: -0.01em;
+  margin-bottom: 2rem;
+}
+.editorial-title em { font-style: italic; }
+.editorial-body {
+  font-size: 13px; color: var(--ghost);
+  line-height: 1.95; max-width: 420px; margin-bottom: 2.5rem;
+}
+.text-link {
+  font-size: 11px; letter-spacing: 0.14em;
+  text-transform: uppercase;
+  border-bottom: 0.5px solid var(--ink);
+  padding-bottom: 3px; transition: color .2s;
+}
+.text-link:hover { color: var(--ghost); }
+
+/* ── PROCESS STRIP ── */
+.process { padding: 5rem 2.5rem; }
+.process-header {
+  display: flex; justify-content: space-between;
+  align-items: baseline; padding-bottom: 2rem;
+  border-bottom: 0.5px solid var(--rule);
+  margin-bottom: 3rem;
+}
+.process-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+}
+.process-item {
+  padding: 2rem 2rem 2rem 0;
+  border-right: 0.5px solid var(--rule);
+}
+.process-item:last-child { border-right: none; padding-right: 0; }
+.process-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem; font-weight: 300;
+  color: var(--warm-mid); line-height: 1;
+  margin-bottom: 1rem;
+}
+.process-name {
+  font-size: 13px; margin-bottom: .5rem; font-weight: 400;
+}
+.process-desc {
+  font-size: 12px; color: var(--ghost); line-height: 1.8;
+}
+
+/* ── CONNECT ── */
+.connect {
+  background: var(--ink); color: var(--paper);
+  padding: 6rem 2.5rem;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 4rem; align-items: center;
+}
+.connect-left .connect-label {
+  font-size: 11px; letter-spacing: 0.16em;
+  text-transform: uppercase; color: rgba(255,255,255,.4);
+  margin-bottom: 1.5rem;
+}
+.connect-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 300; font-size: clamp(2.5rem, 4vw, 4rem);
+  line-height: 1.05; letter-spacing: -0.02em;
+}
+.connect-title em { font-style: italic; color: rgba(255,255,255,.4); }
+.connect-right { display: flex; flex-direction: column; gap: 0; }
+.connect-channel {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.25rem 0;
+  border-bottom: 0.5px solid rgba(255,255,255,.1);
+  color: rgba(255,255,255,.6);
+  transition: color .2s;
+}
+.connect-channel:first-child { border-top: 0.5px solid rgba(255,255,255,.1); }
+.connect-channel:hover { color: #fff; }
+.ch-name { font-size: 13px; letter-spacing: 0.08em; }
+.ch-arrow { font-size: 18px; transition: transform .2s; }
+.connect-channel:hover .ch-arrow { transform: translateX(4px); }
+
+/* ── FOOTER ── */
+footer {
+  padding: 1.5rem 2.5rem;
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 0.5px solid var(--rule);
+  font-size: 11px; color: var(--ghost); letter-spacing: 0.08em;
+  flex-wrap: wrap; gap: .75rem;
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: .95rem; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--ink);
+}
+
+/* ── ART PLACEHOLDERS (SVG) ── */
+.ph-warm { background: #B09A80; }
+.ph-cool { background: #7A8C96; }
+.ph-deep { background: #3D3830; }
+.ph-sage { background: #6B7860; }
+.ph-rust { background: #96614A; }
+.ph-stone { background: #8C8880; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity .7s, transform .7s; }
+.reveal.in { opacity: 1; transform: translateY(0); }
+
+@media (max-width: 860px) {
+  .hero { grid-template-columns: 1fr; grid-template-rows: auto 55vw; }
+  .hero-title { font-size: 3.2rem; }
+  .works-grid { grid-template-columns: 1fr 1fr; }
+  .work-item:nth-child(1),
+  .work-item:nth-child(4) { grid-column: span 2; }
+  .editorial { grid-template-columns: 1fr; }
+  .editorial-img { min-height: 50vw; }
+  .process-grid { grid-template-columns: 1fr 1fr; }
+  .process-item { padding: 1.5rem 1.5rem 1.5rem 0; }
+  .connect { grid-template-columns: 1fr; gap: 2.5rem; }
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">Arte Mirada</a>
+  <div class="nav-right">
+    <a href="#works" class="nav-link">Works</a>
+    <a href="#about" class="nav-link">About</a>
+    <a href="#connect" class="nav-link">Contact</a>
+    <a href="#works" class="nav-link"><span class="nav-dot"></span>Shop</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-index">Contemporary painting · Milan, IT</div>
+
+    <div class="hero-title-block">
+      <h1 class="hero-title">
+        The<br>
+        <em>painted</em><br>
+        moment
+      </h1>
+      <p class="hero-statement">
+        Original abstract paintings that hold tension between gesture and intention.
+        Each work is singular — made in Milan, shipped worldwide.
+      </p>
+    </div>
+
+    <div class="hero-bottom">
+      <a href="#works" class="hero-cta">View available works</a>
+      <span class="hero-location">Milano · 2025</span>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <!-- Replace src with your hero painting -->
+    <svg viewBox="0 0 800 640" class="hero-img-fill" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+      <rect width="800" height="640" fill="#A89880"/>
+      <ellipse cx="400" cy="320" rx="260" ry="320" fill="rgba(45,27,0,0.12)"/>
+      <ellipse cx="400" cy="280" rx="160" ry="200" fill="rgba(45,27,0,0.10)"/>
+      <path d="M120 560 Q240 300 400 220 Q520 160 680 140" stroke="rgba(45,27,0,0.4)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M80 580 Q280 340 440 260 Q560 200 720 180" stroke="rgba(45,27,0,0.2)" stroke-width="1" fill="none"/>
+      <path d="M200 600 Q320 380 460 300 Q580 240 740 220" stroke="rgba(45,27,0,0.12)" stroke-width="0.7" fill="none"/>
+      <circle cx="380" cy="260" r="120" fill="rgba(45,27,0,0.06)"/>
+      <circle cx="420" cy="240" r="60" fill="rgba(45,27,0,0.08)"/>
+      <rect x="260" y="140" width="280" height="360" stroke="rgba(45,27,0,0.15)" stroke-width="0.8" fill="none"/>
+      <path d="M260 320 L400 180 L540 320 L400 460 Z" fill="rgba(45,27,0,0.05)" stroke="rgba(45,27,0,0.18)" stroke-width="0.7"/>
+      <line x1="100" y1="80" x2="700" y2="560" stroke="rgba(45,27,0,0.06)" stroke-width="0.5"/>
+    </svg>
+    <div class="hero-num">01</div>
+    <div class="hero-caption">Umbra Series · Oil on canvas · 2025</div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-inner">
+    <span class="ticker-item">Original works</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Ships from Milan</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Certificate of authenticity</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Commission enquiries welcome</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Also available on Etsy</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Free shipping on originals</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Original works</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Ships from Milan</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Certificate of authenticity</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Commission enquiries welcome</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Also available on Etsy</span><span class="ticker-sep">·</span>
+    <span class="ticker-item">Free shipping on originals</span><span class="ticker-sep">·</span>
+  </div>
+</div>
+
+<!-- WORKS -->
+<section id="works">
+  <div class="works-header">
+    <h2 class="section-label">Available works</h2>
+    <span class="works-count">06 pieces</span>
+  </div>
+  <div class="works-grid">
+
+    <!-- 1: wide -->
+    <div class="work-item reveal">
+      <div class="work-ph ph-warm">
+        <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="900" height="350" fill="none"/>
+          <ellipse cx="450" cy="175" rx="250" ry="130" fill="rgba(45,27,0,0.10)"/>
+          <path d="M80 280 Q280 140 450 120 Q620 100 820 160" stroke="rgba(45,27,0,0.45)" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+          <path d="M80 300 Q300 180 460 160 Q630 140 840 200" stroke="rgba(45,27,0,0.2)" stroke-width="1.2" fill="none"/>
+          <rect x="280" y="80" width="340" height="190" stroke="rgba(45,27,0,0.18)" stroke-width="0.8" fill="rgba(45,27,0,0.04)"/>
+          <circle cx="450" cy="175" rx="70" ry="70" r="70" fill="rgba(45,27,0,0.07)"/>
+        </svg>
+      </div>
+      <div class="work-overlay">
+        <div class="work-title">Umbra I</div>
+        <div class="work-meta">
+          <span>Oil on canvas · 100×80cm</span>
+          <span>€ 480</span>
+        </div>
+        <a href="#" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <!-- 2: tall -->
+    <div class="work-item reveal">
+      <div class="work-ph ph-cool">
+        <svg viewBox="0 0 300 375" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="375" fill="none"/>
+          <rect x="50" y="60" width="200" height="255" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.22)" stroke-width="0.8"/>
+          <line x1="50" y1="187" x2="250" y2="187" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+          <circle cx="150" cy="140" r="50" fill="rgba(255,255,255,0.09)"/>
+          <path d="M70 280 Q150 230 230 260" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+          <ellipse cx="150" cy="188" rx="80" ry="90" fill="rgba(255,255,255,0.04)"/>
+        </svg>
+      </div>
+      <div class="work-overlay">
+        <div class="work-title">Meridian</div>
+        <div class="work-meta">
+          <span>Acrylic · 60×75cm</span>
+          <span>€ 620</span>
+        </div>
+        <a href="#" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <!-- 3: tall -->
+    <div class="work-item reveal">
+      <div class="work-ph ph-sage">
+        <svg viewBox="0 0 300 375" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="375" fill="none"/>
+          <path d="M40 340 L150 40 L260 340 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" stroke-width="0.9"/>
+          <path d="M90 240 Q150 180 210 240" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
+          <circle cx="150" cy="155" r="28" fill="rgba(255,255,255,0.12)"/>
+          <line x1="30" y1="30" x2="270" y2="340" stroke="rgba(255,255,255,0.08)" stroke-width="0.5"/>
+        </svg>
+      </div>
+      <div class="work-overlay">
+        <div class="work-title">Verde Oscuro</div>
+        <div class="work-meta">
+          <span>Mixed media · 50×60cm</span>
+          <span>€ 390</span>
+        </div>
+        <a href="#" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <!-- 4: wide -->
+    <div class="work-item reveal">
+      <div class="work-ph ph-stone">
+        <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="900" height="350" fill="none"/>
+          <line x1="100" y1="100" x2="800" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+          <line x1="800" y1="100" x2="100" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+          <circle cx="450" cy="175" r="100" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="rgba(255,255,255,0.05)"/>
+          <circle cx="450" cy="175" r="45" fill="rgba(255,255,255,0.09)"/>
+          <rect x="200" y="80" width="500" height="190" stroke="rgba(255,255,255,0.1)" stroke-width="0.6" fill="none"/>
+        </svg>
+      </div>
+      <div class="work-overlay">
+        <div class="work-title">Noche Sin Fin</div>
+        <div class="work-meta">
+          <span>Acrylic · 120×50cm</span>
+          <span>€ 720</span>
+        </div>
+        <a href="#" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <!-- 5: tall -->
+    <div class="work-item reveal">
+      <div class="work-ph ph-rust">
+        <svg viewBox="0 0 300 360" width="100%" xmlns="http://www.w3.org/2000/svg">
+          <rect width="300" height="360" fill="none"/>
+          <rect x="60" y="70" width="180" height="220" fill="rgba(255,220,180,0.07)" stroke="rgba(255,220,180,0.22)" stroke-width="0.8"/>
+          <path d="M60 180 Q150 130 240 180 Q150 230 60 180" fill="rgba(255,220,180,0.09)"/>
+          <circle cx="150" cy="160" r="38" stroke="rgba(255,220,180,0.3)" stroke-width="0.8" fill="rgba(255,220,180,0.06)"/>
+          <path d="M80 280 Q150 250 220 280" stroke="rgba(255,220,180,0.4)" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="work-overlay">
+        <div class="work-title">Ocre Plano</div>
+        <div class="work-meta">
+          <span>Oil on linen · 70×84cm</span>
+          <span>€ 540</span>
+        </div>
+        <a href="#" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <!-- 6: commission -->
+    <div class="work-item reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;background:var(--paper)">
+      <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;text-align:center;line-height:1.2;">A work<br><em>made for you</em></div>
+      <p style="font-size:12px;color:var(--ghost);text-align:center;max-width:180px;line-height:1.8;margin-top:.25rem">Discuss size, palette, and intention. Every piece is different.</p>
+      <a href="mailto:hello@arte-mirada.com" class="text-link" style="margin-top:.5rem">Start a conversation</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- EDITORIAL ABOUT -->
+<section class="editorial" id="about">
+  <div class="editorial-img">
+    <svg viewBox="0 0 560 580" width="72%" xmlns="http://www.w3.org/2000/svg" style="opacity:.8">
+      <ellipse cx="280" cy="290" rx="200" ry="250" fill="rgba(255,255,255,0.07)"/>
+      <path d="M80 480 Q200 280 280 220 Q360 160 480 120" stroke="rgba(255,255,255,0.35)" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <path d="M60 500 Q220 320 300 260 Q400 200 500 160" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="none"/>
+      <circle cx="280" cy="240" r="90" fill="rgba(255,255,255,0.06)"/>
+      <rect x="140" y="120" width="280" height="340" stroke="rgba(255,255,255,0.15)" stroke-width="0.8" fill="none"/>
+      <path d="M140 290 L280 160 L420 290 L280 420 Z" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.2)" stroke-width="0.7"/>
+    </svg>
+    <div style="position:absolute;bottom:2rem;right:2rem;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.4)">Studio, Milan</div>
+  </div>
+  <div class="editorial-text reveal">
+    <p class="editorial-eyebrow">The practice</p>
+    <h2 class="editorial-title">
+      Painting is the act<br>of <em>sustained attention</em>
+    </h2>
+    <p class="editorial-body">
+      Based in Milan, I work with oil and acrylic to investigate the space between intention and accident — the marks that arrive before thought, the silence that gathers around them.<br><br>
+      I am drawn to the tension between field and gesture, to monochrome interrupted, to light as it behaves in industrial spaces. Each canvas is completed when there is nothing left to remove.
+    </p>
+    <a href="mailto:hello@arte-mirada.com" class="text-link">Write to the studio</a>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process reveal">
+  <div class="process-header">
+    <span class="section-label">How to acquire a work</span>
+    <a href="mailto:hello@arte-mirada.com" class="text-link">Questions? Write to me</a>
+  </div>
+  <div class="process-grid">
+    <div class="process-item">
+      <div class="process-num">I</div>
+      <div class="process-name">Choose a work</div>
+      <p class="process-desc">Browse available pieces. Contact me for additional photos, video, or to see a work in context.</p>
+    </div>
+    <div class="process-item">
+      <div class="process-num">II</div>
+      <div class="process-name">Secure it directly</div>
+      <p class="process-desc">Pay securely via Stripe — no platform fees. You receive a payment confirmation and certificate.</p>
+    </div>
+    <div class="process-item">
+      <div class="process-num">III</div>
+      <div class="process-name">Carefully packed</div>
+      <p class="process-desc">Each painting is wrapped and packed by hand in the studio. Insured shipping, worldwide.</p>
+    </div>
+    <div class="process-item">
+      <div class="process-num">IV</div>
+      <div class="process-name">In your space</div>
+      <p class="process-desc">14-day return window. If the work doesn't feel right in your space, we find a solution together.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CONNECT -->
+<section class="connect" id="connect">
+  <div class="connect-left">
+    <p class="connect-label">Stay close to the work</p>
+    <h2 class="connect-title">
+      Follow<br>the <em>process</em>
+    </h2>
+  </div>
+  <div class="connect-right">
+    <a href="https://instagram.com" target="_blank" class="connect-channel">
+      <span class="ch-name">Instagram — @artemirada</span>
+      <span class="ch-arrow">→</span>
+    </a>
+    <a href="https://pinterest.com" target="_blank" class="connect-channel">
+      <span class="ch-name">Pinterest — Arte Mirada</span>
+      <span class="ch-arrow">→</span>
+    </a>
+    <a href="https://etsy.com" target="_blank" class="connect-channel">
+      <span class="ch-name">Etsy — Arte Mirada Shop</span>
+      <span class="ch-arrow">→</span>
+    </a>
+    <a href="mailto:hello@arte-mirada.com" class="connect-channel">
+      <span class="ch-name">hello@arte-mirada.com</span>
+      <span class="ch-arrow">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <span class="footer-logo">Arte Mirada</span>
+  <span>© 2025 · Milan, Italy</span>
+  <span>arte-mirada.com</span>
+  <a href="#" style="color:var(--ghost)">↑ Back to top</a>
+</footer>
+
+<script>
+// Custom cursor
+const cur = document.getElementById('cursor');
+let mx = 0, my = 0, cx = 0, cy = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function anim() {
+  cx += (mx - cx) * 0.18;
+  cy += (my - cy) * 0.18;
+  cur.style.left = cx + 'px';
+  cur.style.top = cy + 'px';
+  requestAnimationFrame(anim);
+})();
+document.querySelectorAll('a, button, .work-item').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('hover'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('hover'));
+});
+document.querySelectorAll('.hero-right, .editorial-img').forEach(el => {
+  el.addEventListener('mouseenter', () => cur.classList.add('drag'));
+  el.addEventListener('mouseleave', () => cur.classList.remove('drag'));
+});
+
+// Scroll reveal
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+}, { threshold: 0.12 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+</body>
+</html>
