@@ -16,6 +16,12 @@ a{color:inherit;text-decoration:none;cursor:none}
 #cursor{position:fixed;width:8px;height:8px;background:var(--ink);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .25s,height .25s,background .25s;mix-blend-mode:multiply}
 #cursor.hover{width:48px;height:48px;background:rgba(14,13,11,0.12)}
 #cursor.drag{width:80px;height:80px;background:rgba(14,13,11,0.07)}
+#cursor.sharp {
+  width: 8px;
+  height: 8px;
+  background: var(--ink);
+  mix-blend-mode: normal;
+}
 nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:60px;border-bottom:0.5px solid var(--rule);background:var(--paper)}
 .nav-logo img{height:40px;width:auto;display:block}
 .nav-right{display:flex;align-items:center;gap:2.5rem}
@@ -122,56 +128,65 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 }
 .slides {
   display: flex;
+  width: 100%;
   height: 100%;
-  transition: transform 0.5s ease;
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .slide {
   min-width: 100%;
+  width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   flex-shrink: 0;
+  display: block;
 }
 .slide-prev, .slide-next {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(255,255,255,0.15);
-  border: 0.5px solid rgba(255,255,255,0.3);
+  background: transparent;
+  border: 0.5px solid rgba(255,255,255,0.5);
   color: #fff;
-  font-size: 1.5rem;
-  width: 36px;
-  height: 36px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-weight: 300;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: none;
   z-index: 10;
-  transition: background 0.2s;
-  backdrop-filter: blur(4px);
+  transition: background 0.25s, border-color 0.25s;
+  letter-spacing: 0;
 }
 .slide-prev:hover, .slide-next:hover {
-  background: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.12);
+  border-color: #fff;
 }
-.slide-prev { left: 1rem; }
-.slide-next { right: 1rem; }
+.slide-prev { left: 1.25rem; }
+.slide-next { right: 1.25rem; }
 .slide-dots {
   position: absolute;
-  bottom: 0.75rem;
+  bottom: 1rem;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  gap: 6px;
+  gap: 8px;
   z-index: 10;
 }
 .slide-dots .dot {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
-  background: rgba(255,255,255,0.4);
-  transition: background 0.2s;
+  background: rgba(255,255,255,0.35);
+  transition: background 0.25s, transform 0.25s;
+  cursor: none;
 }
 .slide-dots .dot.active {
   background: #fff;
+  transform: scale(1.4);
 }
 </style>
 </head>
@@ -403,21 +418,48 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 const cur = document.getElementById("cursor");
 let mx=0,my=0,cx=0,cy=0;
 document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY});
-(function anim(){cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;cur.style.left=cx+"px";cur.style.top=cy+"px";requestAnimationFrame(anim)})();
-document.querySelectorAll("a,button").forEach(el=>{
-  el.addEventListener("mouseenter",()=>cur.classList.add("hover"));
-  el.addEventListener("mouseleave",()=>cur.classList.remove("hover"));
+(function anim(){
+  cx+=(mx-cx)*0.18;
+  cy+=(my-cy)*0.18;
+  cur.style.left=cx+"px";
+  cur.style.top=cy+"px";
+  requestAnimationFrame(anim);
+})();
+
+// Cursor states
+// - default: small black dot
+// - hover (links): medium translucent circle  
+// - drag (image areas): large translucent circle
+// - sharp (buttons/arrows): small solid black — always visible
+
+function setCursor(state) {
+  cur.classList.remove("hover","drag","sharp");
+  if (state) cur.classList.add(state);
+}
+
+// Image areas → large circle
+document.querySelectorAll(".work-item, .hero-right, .editorial-img").forEach(el => {
+  el.addEventListener("mouseenter", () => setCursor("drag"));
+  el.addEventListener("mouseleave", () => setCursor(null));
 });
-document.querySelectorAll(".work-item,.hero-right,.editorial-img").forEach(el=>{
-  el.addEventListener("mouseenter",()=>{cur.classList.remove("hover");cur.classList.add("drag")});
-  el.addEventListener("mouseleave",()=>cur.classList.remove("drag"));
+
+// Nav links, text links → medium circle
+document.querySelectorAll("a:not(.work-buy):not(.slide-prev):not(.slide-next)").forEach(el => {
+  el.addEventListener("mouseenter", () => setCursor("hover"));
+  el.addEventListener("mouseleave", () => setCursor(null));
+});
+
+// Arrows + purchase button → small sharp black dot (always visible)
+document.querySelectorAll(".slide-prev, .slide-next, .work-buy").forEach(el => {
+  el.addEventListener("mouseenter", () => setCursor("sharp"));
+  el.addEventListener("mouseleave", () => setCursor(null));
 });
 
 // SCROLL REVEAL
-const obs=new IntersectionObserver(entries=>{
-  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")});
-},{threshold:0.1});
-document.querySelectorAll(".reveal").forEach(el=>obs.observe(el));
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in"); });
+}, { threshold: 0.1 });
+document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
 
 // SLIDERS
 document.querySelectorAll(".slider").forEach(slider => {
@@ -427,7 +469,6 @@ document.querySelectorAll(".slider").forEach(slider => {
   const total = imgs.length;
   let current = 0;
 
-  // Create dots
   imgs.forEach((_, i) => {
     const dot = document.createElement("div");
     dot.classList.add("dot");
