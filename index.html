@@ -113,6 +113,66 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .process-item:nth-child(2n){border-right:none}
   .connect{grid-template-columns:1fr;gap:2.5rem}
 }
+/* SLIDER */
+.slider {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+.slides {
+  display: flex;
+  height: 100%;
+  transition: transform 0.5s ease;
+}
+.slide {
+  min-width: 100%;
+  height: 100%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+.slide-prev, .slide-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255,255,255,0.15);
+  border: 0.5px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: none;
+  z-index: 10;
+  transition: background 0.2s;
+  backdrop-filter: blur(4px);
+}
+.slide-prev:hover, .slide-next:hover {
+  background: rgba(255,255,255,0.3);
+}
+.slide-prev { left: 1rem; }
+.slide-next { right: 1rem; }
+.slide-dots {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+}
+.slide-dots .dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: background 0.2s;
+}
+.slide-dots .dot.active {
+  background: #fff;
+}
 </style>
 </head>
 <body>
@@ -175,7 +235,16 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   <div class="works-grid">
 
     <div class="work-item reveal">
-  <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="work-ph" style="object-fit:cover;width:100%;height:100%">
+  <div class="slider">
+    <div class="slides">
+      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="slide">
+      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
+      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide">
+    </div>
+    <button class="slide-prev">‹</button>
+    <button class="slide-next">›</button>
+    <div class="slide-dots"></div>
+  </div>
   <div class="work-overlay">
     <div class="work-title">I AM</div>
     <div class="work-meta"><span>Oil on canvas · 3 × 30×20×1.5 cm</span><span>€ 480</span></div>
@@ -330,6 +399,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 </footer>
 
 <script>
+// CURSOR
 const cur = document.getElementById("cursor");
 let mx=0,my=0,cx=0,cy=0;
 document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY});
@@ -342,10 +412,53 @@ document.querySelectorAll(".work-item,.hero-right,.editorial-img").forEach(el=>{
   el.addEventListener("mouseenter",()=>{cur.classList.remove("hover");cur.classList.add("drag")});
   el.addEventListener("mouseleave",()=>cur.classList.remove("drag"));
 });
+
+// SCROLL REVEAL
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")});
 },{threshold:0.1});
 document.querySelectorAll(".reveal").forEach(el=>obs.observe(el));
+
+// SLIDERS
+document.querySelectorAll(".slider").forEach(slider => {
+  const slides = slider.querySelector(".slides");
+  const imgs = slider.querySelectorAll(".slide");
+  const dotsContainer = slider.querySelector(".slide-dots");
+  const total = imgs.length;
+  let current = 0;
+
+  // Create dots
+  imgs.forEach((_, i) => {
+    const dot = document.createElement("div");
+    dot.classList.add("dot");
+    if (i === 0) dot.classList.add("active");
+    dot.addEventListener("click", () => goTo(i));
+    dotsContainer.appendChild(dot);
+  });
+
+  function goTo(n) {
+    current = (n + total) % total;
+    slides.style.transform = `translateX(-${current * 100}%)`;
+    slider.querySelectorAll(".dot").forEach((d, i) => {
+      d.classList.toggle("active", i === current);
+    });
+  }
+
+  slider.querySelector(".slide-prev").addEventListener("click", e => {
+    e.stopPropagation(); goTo(current - 1);
+  });
+  slider.querySelector(".slide-next").addEventListener("click", e => {
+    e.stopPropagation(); goTo(current + 1);
+  });
+
+  // Touch swipe
+  let startX = 0;
+  slider.addEventListener("touchstart", e => startX = e.touches[0].clientX);
+  slider.addEventListener("touchend", e => {
+    const diff = startX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) goTo(current + (diff > 0 ? 1 : -1));
+  });
+});
 </script>
 </body>
 </html>
