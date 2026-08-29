@@ -104,89 +104,105 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 .footer-logo img{height:28px;width:auto;display:block;opacity:.65}
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}
 .reveal.in{opacity:1;transform:translateY(0)}
-@media(max-width:860px){
-  body{cursor:auto}#cursor{display:none}a{cursor:pointer}
-  .hero{grid-template-columns:1fr;grid-template-rows:auto 55vw}
-  .hero-right{border-top:0.5px solid var(--rule)}
-  .hero-title{font-size:3.2rem}
-  .works-grid{grid-template-columns:1fr 1fr}
-  .work-item:nth-child(1),.work-item:nth-child(4){grid-column:span 2}
-  .work-item:nth-child(3n){border-right:0.5px solid var(--rule)}
-  .work-item:nth-child(2n){border-right:none}
-  .editorial{grid-template-columns:1fr}
-  .editorial-img{min-height:50vw}
-  .process-grid{grid-template-columns:1fr 1fr}
-  .process-item:nth-child(2n){border-right:none}
-  .connect{grid-template-columns:1fr;gap:2.5rem}
+@media (max-width: 860px) {
+  body { cursor: auto; }
+  #cursor { display: none; }
+  a, button { cursor: pointer; }
+
+  /* NAV */
+  nav { padding: 0 1.25rem; height: 52px; }
+  .nav-logo img { height: 32px; }
+  .nav-right { gap: 1.25rem; }
+  .nav-link { font-size: 10px; letter-spacing: 0.1em; }
+
+  /* HERO */
+  .hero {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 85vw;
+    height: auto;
+    min-height: calc(100vh - 52px);
+  }
+  .hero-left {
+    padding: 2.5rem 1.5rem 2rem;
+    border-right: none;
+    border-bottom: 0.5px solid var(--rule);
+  }
+  .hero-title { font-size: clamp(2.8rem, 11vw, 4rem); margin-bottom: 1.5rem; }
+  .hero-statement { font-size: 12px; max-width: 100%; }
+  .hero-right { height: 85vw; min-height: 260px; }
+  .hero-num { font-size: 3rem; }
+
+  /* TICKER */
+  .ticker-item { padding: 0 1.5rem; font-size: 10px; }
+
+  /* WORKS */
+  #works { padding: 3rem 0 0; }
+  .works-header { padding: 0 1.25rem 1.5rem; }
+  .works-grid { display: flex; flex-direction: column; }
+  .work-item { border-right: none; border-bottom: 0.5px solid var(--rule); width: 100%; }
+  .work-item:nth-child(1) .slider,
+  .work-item:nth-child(1) .work-ph { height: 70vh; min-height: 320px; }
+
+  /* Side-by-side pairs */
+  .works-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-bottom: 0.5px solid var(--rule);
+  }
+  .works-pair .work-item { border-bottom: none; }
+  .works-pair .work-item:first-child { border-right: 0.5px solid var(--rule); }
+  .works-pair .slider,
+  .works-pair .work-ph { height: 48vh; min-height: 200px; }
+
+  /* Wide item 4 (now first in second pair group) */
+  .work-item-wide .slider,
+  .work-item-wide .work-ph { height: 70vh; min-height: 320px; }
+
+  /* Overlay always visible on mobile */
+  .work-overlay {
+    opacity: 1;
+    background: linear-gradient(to top, rgba(14,13,11,0.88) 0%, rgba(14,13,11,0.2) 60%, transparent 100%);
+  }
+  .work-title { font-size: 1.05rem; }
+  .work-meta { font-size: 10px; flex-direction: column; gap: 2px; }
+  .work-buy { font-size: 10px; padding: 5px 12px; margin-top: 8px; }
+
+  /* Hide arrows, use swipe */
+  .slide-prev, .slide-next { display: none; }
+  .slide-dots { bottom: 3.5rem; gap: 10px; }
+  .slide-dots .dot { width: 6px; height: 6px; }
+
+  /* EDITORIAL */
+  .editorial { grid-template-columns: 1fr; }
+  .editorial-img { min-height: 65vw; order: -1; }
+  .editorial-text { padding: 2.5rem 1.5rem; }
+  .editorial-title { font-size: 1.75rem; }
+  .editorial-body { font-size: 12px; }
+
+  /* PROCESS */
+  .process { padding: 3rem 1.25rem; }
+  .process-grid { grid-template-columns: 1fr 1fr; }
+  .process-item { padding: 1.5rem 1rem 1.5rem 0; }
+  .process-item:nth-child(2n) { border-right: none; }
+  .process-item:nth-child(odd) { border-right: 0.5px solid var(--rule); }
+  .process-num { font-size: 2.5rem; }
+  .process-name { font-size: 12px; }
+  .process-desc { font-size: 11px; }
+
+  /* CONNECT */
+  .connect { grid-template-columns: 1fr; gap: 2rem; padding: 3.5rem 1.25rem; }
+  .connect-title { font-size: 2.2rem; }
+  .ch-name { font-size: 12px; }
+
+  /* FOOTER */
+  footer { padding: 1.25rem; font-size: 10px; }
+  .footer-logo img { height: 22px; }
 }
-/* SLIDER */
-.slider {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-.slides {
-  display: flex;
-  width: 100%;
-  height: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.slide {
-  min-width: 100%;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  flex-shrink: 0;
-  display: block;
-}
-.slide-prev, .slide-next {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background: transparent;
-  border: 0.5px solid rgba(255,255,255,0.5);
-  color: #fff;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem;
-  font-weight: 300;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: none;
-  z-index: 10;
-  transition: background 0.25s, border-color 0.25s;
-  letter-spacing: 0;
-}
-.slide-prev:hover, .slide-next:hover {
-  background: rgba(255,255,255,0.12);
-  border-color: #fff;
-}
-.slide-prev { left: 1.25rem; }
-.slide-next { right: 1.25rem; }
-.slide-dots {
-  position: absolute;
-  bottom: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  gap: 8px;
-  z-index: 10;
-}
-.slide-dots .dot {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  transition: background 0.25s, transform 0.25s;
-  cursor: none;
-}
-.slide-dots .dot.active {
-  background: #fff;
-  transform: scale(1.4);
+
+@media (max-width: 400px) {
+  .hero-title { font-size: 2.5rem; }
+  .works-pair .slider,
+  .works-pair .work-ph { height: 38vh; }
 }
 </style>
 </head>
@@ -249,68 +265,78 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   </div>
   <div class="works-grid">
 
-    <div class="work-item reveal">
-  <div class="slider">
-    <div class="slides">
-      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="slide">
-      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
-      <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide">
+  <!-- ITEM 1: wide solo -->
+  <div class="work-item work-item-wide reveal">
+    <div class="slider">
+      <div class="slides">
+        <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="slide">
+        <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
+        <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide">
+      </div>
+      <button class="slide-prev">‹</button>
+      <button class="slide-next">›</button>
+      <div class="slide-dots"></div>
     </div>
-    <button class="slide-prev">‹</button>
-    <button class="slide-next">›</button>
-    <div class="slide-dots"></div>
+    <div class="work-overlay">
+      <div class="work-title">I AM</div>
+      <div class="work-meta"><span>Oil on canvas · 3 × 30×20×1.5 cm</span><span>€ 2,000</span></div>
+      <a href="https://buy.stripe.com/bJeeVc0BecqvcGoc3zdZ600" class="work-buy">Purchase directly →</a>
+    </div>
   </div>
-  <div class="work-overlay">
-    <div class="work-title">I AM</div>
-    <div class="work-meta"><span>Oil on canvas · 3 × 30×20×1.5 cm</span><span>€ 480</span></div>
-    <a href="https://buy.stripe.com/bJeeVc0BecqvcGoc3zdZ600" class="work-buy">Purchase directly →</a>
-  </div>
-</div>
 
-<div class="work-item reveal">
-  <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph" style="object-fit:cover;width:100%;height:100%">
-  <div class="work-overlay">
-    <div class="work-title">In Bloom</div>
-    <div class="work-meta"><span>Oil on canvas · 30×20×1.5 cm</span><span>€ 480</span></div>
-    <a href="https://buy.stripe.com/bJeeVc0BecqvcGoc3zdZ600" class="work-buy">Purchase directly →</a>
-  </div>
-</div>
+  <!-- ITEMS 2 + 3: side by side on mobile -->
+  <div class="works-pair">
 
     <div class="work-item reveal">
-      <!-- REPLACE: <img src="painting-3.jpg" class="work-ph" style="object-fit:cover;aspect-ratio:4/5"> -->
-      <div class="work-ph" style="background:#6B7860">
-        <svg viewBox="0 0 300 375" width="100%" xmlns="http://www.w3.org/2000/svg">
-          <path d="M40 340 L150 40 L260 340 Z" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" stroke-width="0.9"/>
-          <path d="M90 240 Q150 180 210 240" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.3)" stroke-width="1.2"/>
-          <circle cx="150" cy="155" r="28" fill="rgba(255,255,255,0.12)"/>
-        </svg>
+      <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph" style="object-fit:cover;width:100%;height:100%">
+      <div class="work-overlay">
+        <div class="work-title">In Bloom</div>
+        <div class="work-meta"><span>Oil on canvas · 30×20×1.5 cm</span><span>€ 700</span></div>
+        <a href="https://buy.stripe.com/bJeeVc0BecqvcGoc3zdZ600" class="work-buy">Purchase directly →</a>
+      </div>
+    </div>
+
+    <div class="work-item reveal">
+      <div class="slider">
+        <div class="slides">
+          <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="slide">
+          <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
+          <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide">
+        </div>
+        <button class="slide-prev">‹</button>
+        <button class="slide-next">›</button>
+        <div class="slide-dots"></div>
       </div>
       <div class="work-overlay">
-        <div class="work-title">Verde Oscuro</div>
-        <div class="work-meta"><span>Mixed media · 50×60cm</span><span>€ 390</span></div>
+        <div class="work-title">Lucky</div>
+        <div class="work-meta"><span>Oil on canvas · 30×20×1.5 cm</span><span>€ 700</span></div>
         <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
       </div>
     </div>
 
-    <div class="work-item reveal">
-      <!-- REPLACE: <img src="painting-4.jpg" class="work-ph" style="object-fit:cover;aspect-ratio:16/7"> -->
-      <div class="work-ph" style="background:#8C8880">
-        <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
-          <line x1="100" y1="100" x2="800" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-          <line x1="800" y1="100" x2="100" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-          <circle cx="450" cy="175" r="100" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="rgba(255,255,255,0.05)"/>
-          <circle cx="450" cy="175" r="45" fill="rgba(255,255,255,0.09)"/>
-        </svg>
-      </div>
-      <div class="work-overlay">
-        <div class="work-title">Noche Sin Fin</div>
-        <div class="work-meta"><span>Acrylic · 120×50cm</span><span>€ 720</span></div>
-        <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
-      </div>
+  </div>
+
+  <!-- ITEM 4: wide solo -->
+  <div class="work-item work-item-wide reveal">
+    <div class="work-ph" style="background:#8C8880;height:70vh">
+      <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <line x1="100" y1="100" x2="800" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+        <line x1="800" y1="100" x2="100" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+        <circle cx="450" cy="175" r="100" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="rgba(255,255,255,0.05)"/>
+        <circle cx="450" cy="175" r="45" fill="rgba(255,255,255,0.09)"/>
+      </svg>
     </div>
+    <div class="work-overlay">
+      <div class="work-title">Noche Sin Fin</div>
+      <div class="work-meta"><span>Acrylic · 120×50cm</span><span>€ 720</span></div>
+      <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
+    </div>
+  </div>
+
+  <!-- ITEMS 5 + 6: side by side on mobile -->
+  <div class="works-pair">
 
     <div class="work-item reveal">
-      <!-- REPLACE: <img src="painting-5.jpg" class="work-ph" style="object-fit:cover;aspect-ratio:5/6"> -->
       <div class="work-ph" style="background:#96614A">
         <svg viewBox="0 0 300 360" width="100%" xmlns="http://www.w3.org/2000/svg">
           <rect x="60" y="70" width="180" height="220" fill="rgba(255,220,180,0.07)" stroke="rgba(255,220,180,0.22)" stroke-width="0.8"/>
@@ -324,6 +350,17 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
         <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
       </div>
     </div>
+
+    <div class="work-item reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:1rem;background:var(--paper)">
+      <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;text-align:center;line-height:1.2">A work<br><em>made for you</em></div>
+      <p style="font-size:11px;color:var(--ghost);text-align:center;max-width:160px;line-height:1.8">Discuss size, palette, and intention.</p>
+      <a href="mailto:miradagallery@gmail.com" class="text-link" style="margin-top:.5rem">Start a conversation</a>
+    </div>
+
+  </div>
+
+</div>
 
     <div class="work-item reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;background:var(--paper)">
       <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
