@@ -53,41 +53,48 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* Desktop 3-col grid */
 .works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
-/* works-pair: invisible wrapper on desktop, becomes side-by-side on mobile */
 .works-pair{display:contents}
 .work-item{position:relative;overflow:hidden;border-right:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule)}
-/* Wide items span 2 cols on desktop */
 .work-item-wide{grid-column:span 2}
-/* 3rd-column items lose right border */
 .works-pair:first-of-type .work-item:last-child{border-right:none}
 .works-pair:last-of-type .work-item:last-child{border-right:none}
 
-/* DESKTOP image sizing via aspect-ratio */
-.work-item-wide > .slider{aspect-ratio:16/7}
-.work-item-wide > .work-ph{aspect-ratio:16/7}
-.works-pair .work-item > .slider{aspect-ratio:4/5}
-.works-pair .work-item > .work-ph{aspect-ratio:4/5}
-.works-pair .work-item > img.work-ph{width:100%;display:block;aspect-ratio:4/5;object-fit:cover}
+/* DESKTOP: work-item-wide gets explicit height so slider can inherit it */
+.work-item-wide{height:42vw;max-height:560px}
+.works-pair .work-item{height:0;padding-bottom:125%}/* 4:5 ratio via padding trick */
 
-.work-ph{width:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.work-item:hover > .work-ph{transform:scale(1.04);transition:transform .6s ease}
+/* Slider fills parent completely */
+.slider{position:absolute;inset:0;overflow:hidden}
+.work-item-wide > .slider{position:relative;width:100%;height:100%}
+.works-pair .work-item > .slider{position:absolute;inset:0}
+
+/* Direct img (no slider) fills cell */
+.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.work-item-wide > img.work-ph{position:relative;width:100%;height:100%;object-fit:cover;display:block}
+
+/* Fallback work-ph div */
+.work-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.work-item-wide > .work-ph{position:relative}
+.works-pair .work-item > .work-ph{position:absolute;inset:0}
+
+.work-item:hover > img.work-ph,
+.work-item:hover > .work-ph,
 .work-item:hover > .slider{transform:scale(1.04);transition:transform .6s ease}
 
-.work-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);opacity:0;transition:opacity .35s}
+.work-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);opacity:0;transition:opacity .35s;z-index:2}
 .work-item:hover .work-overlay{opacity:1}
 .work-title{font-family:"Cormorant Garamond",serif;font-size:1.35rem;font-weight:300;color:#fff;margin-bottom:4px}
 .work-meta{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;justify-content:space-between}
 .work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.5);padding:6px 14px;transition:background .2s,border-color .2s}
 .work-buy:hover{background:rgba(255,255,255,.15);border-color:#fff}
 
-/* ── SLIDER ── */
-.slider{position:relative;width:100%;overflow:hidden}
-.slides{display:flex;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+/* ── SLIDER INTERNALS ── */
+.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
 .slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block}
-.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0.5px solid rgba(255,255,255,0.5);color:#fff;font-family:"Cormorant Garamond",serif;font-size:1.2rem;font-weight:300;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:none;z-index:10;transition:background 0.25s,border-color 0.25s}
+.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0.5px solid rgba(255,255,255,0.5);color:#fff;font-family:"Cormorant Garamond",serif;font-size:1.2rem;font-weight:300;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:none;z-index:20;transition:background 0.25s,border-color 0.25s}
 .slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.12);border-color:#fff}
 .slide-prev{left:1.25rem}.slide-next{right:1.25rem}
-.slide-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
+.slide-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20}
 .slide-dots .dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.35);transition:background 0.25s,transform 0.25s;cursor:none}
 .slide-dots .dot.active{background:#fff;transform:scale(1.4)}
 
@@ -154,29 +161,36 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   #works{padding:3rem 0 0}
   .works-header{padding:0 1.25rem 1.5rem}
   .works-grid{display:flex;flex-direction:column}
-  .work-item{border-right:none;width:100%}
-  .work-item-wide{grid-column:unset}
 
-  /* Wide solo: full width 70vh */
-  .work-item-wide > .slider,
-  .work-item-wide > .work-ph{aspect-ratio:unset;height:70vh;min-height:280px}
+  /* Reset desktop padding-bottom trick */
+  .work-item{border-right:none;width:100%;height:auto;padding-bottom:0;position:relative}
+  .work-item-wide{grid-column:unset;height:70vh;max-height:none;min-height:280px}
 
-  /* Pair: side-by-side 2col */
+  /* Wide solo slider fills the 70vh parent */
+  .work-item-wide > .slider{position:absolute;inset:0;width:100%;height:100%}
+  .work-item-wide > .work-ph{position:absolute;inset:0;width:100%;height:100%}
+  .work-item-wide > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+
+  /* Pair: side-by-side */
   .works-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--rule)}
-  .works-pair .work-item{border-bottom:none;border-right:none;width:100%}
+  .works-pair .work-item{border-bottom:none;border-right:none;width:100%;height:48vh;min-height:180px;padding-bottom:0}
   .works-pair .work-item:first-child{border-right:0.5px solid var(--rule)}
-  .works-pair .work-item > .slider,
-  .works-pair .work-item > .work-ph,
-  .works-pair .work-item > img.work-ph{aspect-ratio:unset;height:48vh;min-height:180px;width:100%;object-fit:cover;display:block}
 
-  /* Overlay always visible */
+  /* Pair slider and images fill the 48vh parent */
+  .works-pair .work-item > .slider{position:absolute;inset:0;width:100%;height:100%}
+  .works-pair .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
+  .works-pair .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
+  /* Overlay always visible on mobile */
   .work-overlay{opacity:1;background:linear-gradient(to top,rgba(14,13,11,0.88) 0%,rgba(14,13,11,0.15) 65%,transparent 100%)}
   .work-title{font-size:1rem}
   .work-meta{font-size:10px;flex-direction:column;gap:2px}
   .work-buy{font-size:10px;padding:5px 12px;margin-top:8px}
-  .slide-prev,.slide-next{display:none}
+
+  /* Arrows visible and tappable on mobile */
+  .slide-prev,.slide-next{display:flex;width:36px;height:36px;cursor:pointer}
   .slide-dots{bottom:3.5rem;gap:10px}
-  .slide-dots .dot{width:6px;height:6px}
+  .slide-dots .dot{width:6px;height:6px;cursor:pointer}
 
   .editorial{grid-template-columns:1fr}
   .editorial-img{min-height:65vw;order:-1}
