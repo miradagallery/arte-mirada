@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mirada — Paintings by Fernanda Biagi</title>
-<meta name="description" content="Original paintings by Fernanda Biagi. Contemporary works from Milan — the world as I see it.">
+<meta name="description" content="Mirada — from Spanish, meaning gaze. The one turned inward. Original oil paintings by Fernanda Biagi · Milan.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
 <style>
@@ -53,7 +53,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .works-header{padding:0 2.5rem 3rem;display:flex;justify-content:space-between;align-items:baseline;border-bottom:0.5px solid var(--rule)}
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
 .works-count{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:300;color:var(--ghost)}
-.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
+.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}.works-pair{display:contents}
 .work-item{position:relative;overflow:hidden;border-right:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule)}
 .work-item:nth-child(3n){border-right:none}
 .work-item:nth-child(1){grid-column:span 2}
@@ -116,17 +116,8 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .nav-link { font-size: 10px; letter-spacing: 0.1em; }
 
   /* HERO */
-  .hero {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 85vw;
-    height: auto;
-    min-height: calc(100vh - 52px);
-  }
-  .hero-left {
-    padding: 2.5rem 1.5rem 2rem;
-    border-right: none;
-    border-bottom: 0.5px solid var(--rule);
-  }
+  .hero { grid-template-columns: 1fr; grid-template-rows: auto 85vw; height: auto; min-height: calc(100vh - 52px); }
+  .hero-left { padding: 2.5rem 1.5rem 2rem; border-right: none; border-bottom: 0.5px solid var(--rule); }
   .hero-title { font-size: clamp(2.8rem, 11vw, 4rem); margin-bottom: 1.5rem; }
   .hero-statement { font-size: 12px; max-width: 100%; }
   .hero-right { height: 85vw; min-height: 260px; }
@@ -135,197 +126,36 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   /* TICKER */
   .ticker-item { padding: 0 1.5rem; font-size: 10px; }
 
-/* WORKS */
-#works { padding: 5rem 0 0; }
-.works-header {
-  padding: 0 2.5rem 3rem;
-  display: flex; justify-content: space-between; align-items: baseline;
-  border-bottom: 0.5px solid var(--rule);
-}
-.section-label {
-  font-size: 11px; letter-spacing: 0.14em;
-  text-transform: uppercase; color: var(--ghost);
-}
-.works-count {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.5rem; font-weight: 300; color: var(--ghost);
-}
-
-/* Desktop grid */
-.works-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-}
-/* works-pair is invisible on desktop — just a passthrough */
-.works-pair {
-  display: contents;
-}
-.work-item {
-  position: relative; overflow: hidden;
-  border-right: 0.5px solid var(--rule);
-  border-bottom: 0.5px solid var(--rule);
-}
-/* Desktop: wide items span 2 columns */
-.work-item-wide {
-  grid-column: span 2;
-}
-/* Desktop: right-side items (3rd column position) lose right border */
-.work-item:nth-child(3n) { border-right: none; }
-
-.work-ph {
-  width: 100%; display: flex; align-items: center; justify-content: center;
-  transition: transform .6s ease; overflow: hidden;
-}
-/* Desktop aspect ratios */
-.work-item-wide .work-ph  { aspect-ratio: 16/7; }
-.work-item-wide .slider   { aspect-ratio: 16/7; }
-.work-item:not(.work-item-wide) .work-ph { aspect-ratio: 4/5; }
-.work-item:not(.work-item-wide) .slider  { aspect-ratio: 4/5; }
-
-.work-item:hover .work-ph { transform: scale(1.04); }
-
-.work-overlay {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column; justify-content: flex-end;
-  padding: 1.5rem;
-  background: linear-gradient(to top, rgba(14,13,11,0.78) 0%, transparent 55%);
-  opacity: 0; transition: opacity .35s;
-}
-.work-item:hover .work-overlay { opacity: 1; }
-.work-title {
-  font-family: "Cormorant Garamond", serif;
-  font-size: 1.35rem; font-weight: 300; color: #fff; margin-bottom: 4px;
-}
-.work-meta {
-  font-size: 11px; letter-spacing: 0.1em;
-  text-transform: uppercase; color: rgba(255,255,255,.6);
-  display: flex; justify-content: space-between;
-}
-.work-buy {
-  display: inline-block; margin-top: 10px;
-  font-size: 11px; letter-spacing: 0.12em;
-  text-transform: uppercase; color: #fff;
-  border: 0.5px solid rgba(255,255,255,.5);
-  padding: 6px 14px; transition: background .2s, border-color .2s;
-}
-.work-buy:hover { background: rgba(255,255,255,.15); border-color: #fff; }
-
-/* SLIDER */
-.slider {
-  position: relative; width: 100%; overflow: hidden;
-}
-.slides {
-  display: flex; width: 100%; height: 100%;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.slide {
-  min-width: 100%; width: 100%; height: 100%;
-  object-fit: cover; object-position: center;
-  flex-shrink: 0; display: block;
-}
-.slide-prev, .slide-next {
-  position: absolute; top: 50%; transform: translateY(-50%);
-  background: transparent;
-  border: 0.5px solid rgba(255,255,255,0.5);
-  color: #fff;
-  font-family: 'Cormorant Garamond', serif;
-  font-size: 1.2rem; font-weight: 300;
-  width: 32px; height: 32px;
-  display: flex; align-items: center; justify-content: center;
-  cursor: none; z-index: 10;
-  transition: background 0.25s, border-color 0.25s;
-}
-.slide-prev:hover, .slide-next:hover {
-  background: rgba(255,255,255,0.12); border-color: #fff;
-}
-.slide-prev { left: 1.25rem; }
-.slide-next { right: 1.25rem; }
-.slide-dots {
-  position: absolute; bottom: 1rem; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 8px; z-index: 10;
-}
-.slide-dots .dot {
-  width: 4px; height: 4px; border-radius: 50%;
-  background: rgba(255,255,255,0.35);
-  transition: background 0.25s, transform 0.25s; cursor: none;
-}
-.slide-dots .dot.active { background: #fff; transform: scale(1.4); }
-
-/* ── MOBILE ── */
-@media (max-width: 860px) {
-  body { cursor: auto; }
-  #cursor { display: none; }
-  a, button { cursor: pointer; }
-
-  /* NAV */
-  nav { padding: 0 1.25rem; height: 52px; }
-  .nav-logo img { height: 32px; }
-  .nav-right { gap: 1.25rem; }
-  .nav-link { font-size: 10px; letter-spacing: 0.1em; }
-
-  /* HERO */
-  .hero {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto 85vw;
-    height: auto;
-    min-height: calc(100vh - 52px);
-  }
-  .hero-left {
-    padding: 2.5rem 1.5rem 2rem;
-    border-right: none;
-    border-bottom: 0.5px solid var(--rule);
-  }
-  .hero-title { font-size: clamp(2.8rem, 11vw, 4rem); margin-bottom: 1.5rem; }
-  .hero-statement { font-size: 12px; max-width: 100%; }
-  .hero-right { height: 85vw; min-height: 260px; }
-  .hero-num { font-size: 3rem; }
-
-  /* TICKER */
-  .ticker-item { padding: 0 1.5rem; font-size: 10px; }
-
-  /* WORKS — mobile layout */
+  /* WORKS */
   #works { padding: 3rem 0 0; }
   .works-header { padding: 0 1.25rem 1.5rem; }
 
-  /* Switch grid to flex column */
-  .works-grid {
-    display: flex;
-    flex-direction: column;
-  }
+  /* Grid becomes flex column on mobile */
+  .works-grid { display: flex; flex-direction: column; }
 
-  /* works-pair becomes a real side-by-side grid on mobile */
+  /* works-pair: side-by-side 2-col grid on mobile */
   .works-pair {
     display: grid;
     grid-template-columns: 1fr 1fr;
     border-bottom: 0.5px solid var(--rule);
   }
-  .works-pair .work-item {
-    border-bottom: none;
-    border-right: none;
-  }
-  .works-pair .work-item:first-child {
-    border-right: 0.5px solid var(--rule);
-  }
+  .works-pair .work-item { border-bottom: none; border-right: none; }
+  .works-pair .work-item:first-child { border-right: 0.5px solid var(--rule); }
 
-  /* All items: reset desktop column spanning */
+  /* Reset desktop rules */
   .work-item { border-right: none; width: 100%; }
   .work-item-wide { grid-column: unset; }
 
-  /* Wide solo items: 70vh */
-  .work-item-wide .slider,
-  .work-item-wide .work-ph {
-    aspect-ratio: unset;
-    height: 70vh;
-    min-height: 300px;
-  }
+  /* Override aspect-ratio with explicit heights on mobile */
+  .work-item-wide > .slider,
+  .work-item-wide > .work-ph { aspect-ratio: unset !important; height: 70vh; min-height: 300px; }
 
-  /* Pair items: 48vh each */
-  .works-pair .slider,
-  .works-pair .work-ph {
-    aspect-ratio: unset;
-    height: 48vh;
-    min-height: 200px;
-  }
+  .works-pair > .work-item > .slider,
+  .works-pair > .work-item > .work-ph,
+  .works-pair > .work-item > img.work-ph { aspect-ratio: unset !important; height: 48vh; min-height: 180px; }
+
+  /* Direct img inside work-item (not in slider) */
+  img.work-ph { height: 100%; width: 100%; object-fit: cover; display: block; }
 
   /* Overlay always visible on mobile */
   .work-overlay {
@@ -336,7 +166,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .work-meta { font-size: 10px; flex-direction: column; gap: 2px; }
   .work-buy { font-size: 10px; padding: 5px 12px; margin-top: 8px; }
 
-  /* Hide arrows on mobile */
+  /* Hide arrows, swipe instead */
   .slide-prev, .slide-next { display: none; }
   .slide-dots { bottom: 3.5rem; gap: 10px; }
   .slide-dots .dot { width: 6px; height: 6px; }
@@ -363,11 +193,9 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .connect-title { font-size: 2.2rem; }
   .ch-name { font-size: 12px; }
 
-    /* FOOTER */
+  /* FOOTER */
   footer { padding: 1.25rem; font-size: 10px; }
   .footer-logo img { height: 22px; }
-}
-}
 
 @media (max-width: 400px) {
   .hero-title { font-size: 2.5rem; }
@@ -488,7 +316,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 
   <!-- ITEM 4: wide solo -->
   <div class="work-item work-item-wide reveal">
-    <div class="work-ph" style="background:#8C8880;height:70vh">
+    <div class="work-ph" style="background:#8C8880">
       <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
         <line x1="100" y1="100" x2="800" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
         <line x1="800" y1="100" x2="100" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
@@ -529,15 +357,6 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
     </div>
 
   </div>
-
-</div>
-
-    <div class="work-item reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 2rem;gap:1rem;background:var(--paper)">
-      <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
-      <div style="font-family:Cormorant Garamond,serif;font-size:2rem;font-weight:300;text-align:center;line-height:1.2">A work<br><em>made for you</em></div>
-      <p style="font-size:12px;color:var(--ghost);text-align:center;max-width:180px;line-height:1.8;margin-top:.25rem">Discuss size, palette, and intention. Every piece is different.</p>
-      <a href="mailto:miradagallery@gmail.com" class="text-link" style="margin-top:.5rem">Start a conversation</a>
-    </div>
 
   </div>
 </section>
