@@ -60,6 +60,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   border-right:0.5px solid var(--rule);
   border-bottom:0.5px solid var(--rule);
 }
+.work-item.commission{overflow:visible}
 .work-item-wide{grid-column:span 2}
 /* Third-column items lose right border */
 .works-pair:first-of-type .work-item:last-child,
@@ -70,9 +71,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
    Wide items: 44vw tall. Pair items: match by making them equal via grid-row.
    We do NOT use aspect-ratio on the slider because it breaks height:100% on children. */
 
-.work-item-wide{height:42vw;max-height:580px;min-height:300px}
-/* Pair items match each other automatically because they share a grid row */
-.works-pair .work-item{height:56vw;max-height:680px;min-height:360px}
+/* Both rows defined explicitly so wide and pair items align */
+.works-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  grid-template-rows:42vw auto 42vw auto;
+}
+.work-item-wide{height:100%}
+/* Pair items use the auto row — set equal height explicitly */
+.works-pair .work-item{height:54vw;max-height:700px;min-height:340px}
 
 /* Slider fills work-item completely */
 .slider{
@@ -120,21 +127,23 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   overflow:hidden;
 }
 
-/* Commission cell — not a media cell, needs normal flow */
+/* Commission cell */
 .work-item.commission{
-  position:relative;
   overflow:visible;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  overflow:hidden;
+  gap:1rem;
+  padding:2.5rem 1.5rem;
 }
 
 /* Hover zoom — only on slider/img, not overlay */
-.work-item:hover > .slider{transform:scale(1.04);transition:transform .6s ease}
+/* Zoom only the image strip, never the controls */
+.work-item:hover .slides{transform:scale(1.04);transition:transform .6s ease}
 .work-item:hover > img.work-ph{transform:scale(1.04);transition:transform .6s ease}
-.work-item:hover > .work-ph{transform:scale(1.04);transition:transform .6s ease}
+.work-item:hover > .work-ph svg{transform:scale(1.04);transition:transform .6s ease}
+.slides{transform-origin:center center}
 
 /* Overlay sits ABOVE slider, but pointer-events:none so arrows remain clickable */
 .work-overlay{
@@ -304,16 +313,21 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .works-pair .work-item > img.work-ph,
   .works-pair .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
 
-  /* Commission cell: needs visible overflow for text */
+  /* Commission cell on mobile */
   .works-pair .work-item.commission{
-    overflow:visible;
+    overflow:hidden;
     display:flex;
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    padding:1.5rem 1rem;
-    gap:.75rem;
-    overflow:hidden;
+    padding:1rem .75rem;
+    gap:.5rem;
+    position:relative;
+    height:52vh;
+  }
+  .works-pair .work-item.commission > *{
+    position:relative;
+    z-index:1;
   }
 
   /* Overlay always on */
@@ -501,7 +515,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
           <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
         </div>
       </div>
-      <div class="work-item commission reveal" style="background:var(--paper)">
+      <div class="work-item commission reveal" style="background:var(--paper);border-right:none">
         <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;text-align:center;line-height:1.2">A work<br><em>made for you</em></div>
         <p style="font-size:11px;color:var(--ghost);text-align:center;max-width:160px;line-height:1.8">Discuss size, palette, and intention.</p>
