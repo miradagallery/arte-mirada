@@ -51,8 +51,8 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
 .works-count{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:300;color:var(--ghost)}
 
-/* Desktop grid — works-pair is display:contents so it's invisible to the grid */
-.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
+/* ── DESKTOP: 3-col grid ── */
+.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:42vw auto 42vw auto}
 .works-pair{display:contents}
 .work-item{
   position:relative;
@@ -60,74 +60,12 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   border-right:0.5px solid var(--rule);
   border-bottom:0.5px solid var(--rule);
 }
-.work-item.commission{overflow:visible}
-.work-item-wide{grid-column:span 2}
-/* Third-column items lose right border */
+.work-item-wide{grid-column:span 2;height:100%}
+.works-pair .work-item{height:54vw;max-height:700px;min-height:340px}
 .works-pair:first-of-type .work-item:last-child,
 .works-pair:last-of-type .work-item:last-child{border-right:none}
 
-/* ── DESKTOP IMAGE SIZING ──
-   Strategy: give each work-item a fixed height, then fill with slider/img.
-   Wide items: 44vw tall. Pair items: match by making them equal via grid-row.
-   We do NOT use aspect-ratio on the slider because it breaks height:100% on children. */
-
-/* Both rows defined explicitly so wide and pair items align */
-.works-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr 1fr;
-  grid-template-rows:42vw auto 42vw auto;
-}
-.work-item-wide{height:100%}
-/* Pair items use the auto row — set equal height explicitly */
-.works-pair .work-item{height:54vw;max-height:700px;min-height:340px}
-
-/* Slider fills work-item completely */
-.slider{
-  position:absolute;
-  inset:0;
-  overflow:hidden;
-  width:100%;
-  height:100%;
-}
-.slides{
-  display:flex;
-  width:100%;
-  height:100%;
-  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
-}
-.slide{
-  min-width:100%;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  object-position:center;
-  flex-shrink:0;
-  display:block;
-}
-
-/* Direct img (no slider wrapper) */
-.work-item > img.work-ph{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-}
-
-/* Fallback work-ph div (SVG placeholder) */
-.work-ph{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  overflow:hidden;
-}
-
-/* Commission cell */
+/* Commission cell — needs flex layout not overflow:hidden */
 .work-item.commission{
   overflow:visible;
   display:flex;
@@ -136,90 +74,60 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
   justify-content:center;
   gap:1rem;
   padding:2.5rem 1.5rem;
+  background:var(--paper);
 }
 
-/* Hover zoom — only on slider/img, not overlay */
-/* Zoom only the image strip, never the controls */
-.work-item:hover .slides{transform:scale(1.04);transition:transform .6s ease}
-.work-item:hover > img.work-ph{transform:scale(1.04);transition:transform .6s ease}
-.work-item:hover > .work-ph svg{transform:scale(1.04);transition:transform .6s ease}
-.slides{transform-origin:center center}
+/* Slider fills work-item completely */
+.slider{position:absolute;inset:0;overflow:hidden;width:100%;height:100%}
+.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block}
 
-/* Overlay sits ABOVE slider, but pointer-events:none so arrows remain clickable */
+/* Direct img */
+.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+
+/* SVG placeholder */
+.work-ph{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+
+/* Hover: zoom only the image content, not the controls */
+.work-item:not(.commission):hover .slides{transform:scale(1.04);transition:transform .6s ease}
+.work-item:not(.commission):hover > img.work-ph{transform:scale(1.04);transition:transform .6s ease}
+.work-item:not(.commission):hover > .work-ph{transform:scale(1.04);transition:transform .6s ease}
+
+/* Overlay: pointer-events:none so arrows stay clickable */
 .work-overlay{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:flex-end;
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;justify-content:flex-end;
   padding:1.5rem;
   background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);
-  opacity:0;
-  transition:opacity .35s;
+  opacity:0;transition:opacity .35s;
   z-index:5;
-  pointer-events:none; /* overlay is visual only — clicks pass through to slider */
+  pointer-events:none;
 }
-/* Re-enable pointer events on the interactive elements inside overlay */
-.work-overlay a,
-.work-overlay button{pointer-events:auto}
+.work-overlay a,.work-overlay button{pointer-events:auto}
 .work-item:hover .work-overlay{opacity:1}
-
 .work-title{font-family:"Cormorant Garamond",serif;font-size:1.35rem;font-weight:300;color:#fff;margin-bottom:4px}
 .work-meta{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;justify-content:space-between}
-.work-buy{
-  display:inline-block;
-  margin-top:10px;
-  font-size:11px;
-  letter-spacing:0.12em;
-  text-transform:uppercase;
-  color:#fff;
-  border:0.5px solid rgba(255,255,255,.5);
-  padding:6px 14px;
-  transition:background .2s,border-color .2s;
-  pointer-events:auto;
-}
+.work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.5);padding:6px 14px;transition:background .2s,border-color .2s;pointer-events:auto}
 .work-buy:hover{background:rgba(255,255,255,.15);border-color:#fff}
 
-/* Slider controls — above everything, always clickable */
+/* Slider controls — z-index above overlay */
 .slide-prev,.slide-next{
-  position:absolute;
-  top:50%;
-  transform:translateY(-50%);
-  background:transparent;
-  border:0.5px solid rgba(255,255,255,0.5);
-  color:#fff;
-  font-family:"Cormorant Garamond",serif;
-  font-size:1.4rem;
-  font-weight:300;
-  width:36px;
-  height:36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:10; /* above overlay which is z-index:5 */
+  position:absolute;top:50%;transform:translateY(-50%);
+  background:transparent;border:0.5px solid rgba(255,255,255,0.5);
+  color:#fff;font-family:"Cormorant Garamond",serif;
+  font-size:1.4rem;font-weight:300;
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  z-index:10;cursor:pointer;pointer-events:auto;
   transition:background 0.25s,border-color 0.25s;
-  cursor:pointer;
-  pointer-events:auto;
 }
 .slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.2);border-color:#fff}
 .slide-prev{left:1rem}.slide-next{right:1rem}
 .slide-dots{
-  position:absolute;
-  bottom:1rem;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  gap:8px;
-  z-index:10;
-  pointer-events:auto;
+  position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);
+  display:flex;gap:8px;z-index:10;pointer-events:auto;
 }
-.slide-dots .dot{
-  width:5px;height:5px;
-  border-radius:50%;
-  background:rgba(255,255,255,0.4);
-  transition:background 0.25s,transform 0.25s;
-  cursor:pointer;
-}
+.slide-dots .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4);transition:background 0.25s,transform 0.25s;cursor:pointer}
 .slide-dots .dot.active{background:#fff;transform:scale(1.4)}
 
 /* ── EDITORIAL ── */
@@ -281,72 +189,61 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .hero-num{font-size:3rem}
   .ticker-item{padding:0 1.5rem;font-size:10px}
 
-  /* Works mobile */
-  #works{padding:3rem 0 0}
+  /* ── WORKS MOBILE ── 
+     Single column, all artworks full width, consistent height.
+     No side-by-side pairs — works-pair becomes a normal block column. */
+  #works{padding:2.5rem 0 0}
   .works-header{padding:0 1.25rem 1.5rem}
 
-  /* Switch grid to column */
-  .works-grid{display:flex;flex-direction:column}
+  /* Switch to single column */
+  .works-grid{display:flex;flex-direction:column;grid-template-rows:unset}
+  .works-pair{display:flex;flex-direction:column}
 
-  /* Reset desktop heights */
-  .work-item{height:auto;max-height:none;min-height:0;overflow:hidden}
-
-  /* Wide solo: 70vh */
-  .work-item-wide{height:70vh;min-height:260px;max-height:none}
-  .work-item-wide > .slider,
-  .work-item-wide > img.work-ph,
-  .work-item-wide > .work-ph{position:absolute;inset:0;width:100%;height:100%}
-
-  /* Pair: side-by-side equal height */
-  .works-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--rule)}
-  .works-pair .work-item{
-    border-bottom:none;
+  /* Every work-item: full width, consistent 65vw height */
+  .work-item{
+    width:100%;
+    height:65vw;
+    min-height:220px;
+    max-height:380px;
     border-right:none;
-    height:52vh;
-    min-height:200px;
+    border-bottom:0.5px solid var(--rule);
+    overflow:hidden;
+    position:relative;
+  }
+  .work-item-wide{height:65vw;min-height:220px;max-height:380px}
+
+  /* All sliders and images fill their parent */
+  .slider{position:absolute;inset:0;width:100%;height:100%}
+  .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
+
+  /* Commission cell */
+  .work-item.commission{
+    overflow:hidden;
+    height:auto;
+    min-height:180px;
     max-height:none;
+    display:flex;flex-direction:column;
+    align-items:center;justify-content:center;
+    padding:2.5rem 1.5rem;
+    gap:.75rem;
     position:relative;
-    overflow:hidden;
-  }
-  .works-pair .work-item:first-child{border-right:0.5px solid var(--rule)}
-  .works-pair .work-item > .slider,
-  .works-pair .work-item > img.work-ph,
-  .works-pair .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
-
-  /* Commission cell on mobile */
-  .works-pair .work-item.commission{
-    overflow:hidden;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    padding:1rem .75rem;
-    gap:.5rem;
-    position:relative;
-    height:52vh;
-  }
-  .works-pair .work-item.commission > *{
-    position:relative;
-    z-index:1;
   }
 
-  /* Overlay always on */
+  /* Overlay always visible on mobile */
   .work-overlay{
     opacity:1;
-    background:linear-gradient(to top,rgba(14,13,11,0.88) 0%,rgba(14,13,11,0.15) 65%,transparent 100%);
+    background:linear-gradient(to top,rgba(14,13,11,0.85) 0%,rgba(14,13,11,0.1) 60%,transparent 100%);
   }
-  .work-title{font-size:.95rem}
-  .work-meta{font-size:10px;flex-direction:column;gap:2px}
-  .work-buy{font-size:10px;padding:5px 10px;margin-top:6px}
+  .work-title{font-size:1.1rem}
+  .work-meta{font-size:11px;flex-direction:row;gap:0;justify-content:space-between}
+  .work-buy{font-size:11px;padding:6px 14px;margin-top:8px}
 
-  /* Arrows: visible and tappable on mobile */
-  .slide-prev,.slide-next{
-    display:flex;
-    width:34px;height:34px;
-    cursor:pointer;
-    font-size:1.2rem;
-  }
-  .slide-dots{bottom:3rem;gap:10px}
+  /* Arrows: show on mobile, tappable */
+  .slide-prev,.slide-next{display:flex;width:38px;height:38px;cursor:pointer;font-size:1.3rem}
+
+  /* Dots: push well below the purchase button */
+  .slide-dots{bottom:auto;top:1rem;transform:translateX(-50%)}
   .slide-dots .dot{width:6px;height:6px;cursor:pointer}
 
   .editorial{grid-template-columns:1fr}
