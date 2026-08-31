@@ -51,51 +51,166 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
 .works-count{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:300;color:var(--ghost)}
 
-/* Desktop 3-col grid */
+/* Desktop grid — works-pair is display:contents so it's invisible to the grid */
 .works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
 .works-pair{display:contents}
-.work-item{position:relative;overflow:hidden;border-right:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule)}
+.work-item{
+  position:relative;
+  overflow:hidden;
+  border-right:0.5px solid var(--rule);
+  border-bottom:0.5px solid var(--rule);
+}
 .work-item-wide{grid-column:span 2}
-.works-pair:first-of-type .work-item:last-child{border-right:none}
+/* Third-column items lose right border */
+.works-pair:first-of-type .work-item:last-child,
 .works-pair:last-of-type .work-item:last-child{border-right:none}
 
-/* DESKTOP: work-item-wide gets explicit height so slider can inherit it */
-.work-item-wide{height:42vw;max-height:560px}
-.works-pair .work-item{height:0;padding-bottom:125%}/* 4:5 ratio via padding trick */
+/* ── DESKTOP IMAGE SIZING ──
+   Strategy: give each work-item a fixed height, then fill with slider/img.
+   Wide items: 44vw tall. Pair items: match by making them equal via grid-row.
+   We do NOT use aspect-ratio on the slider because it breaks height:100% on children. */
 
-/* Slider fills parent completely */
-.slider{position:absolute;inset:0;overflow:hidden}
-.work-item-wide > .slider{position:relative;width:100%;height:100%}
-.works-pair .work-item > .slider{position:absolute;inset:0}
+.work-item-wide{height:42vw;max-height:580px;min-height:300px}
+/* Pair items match each other automatically because they share a grid row */
+.works-pair .work-item{height:56vw;max-height:680px;min-height:360px}
 
-/* Direct img (no slider) fills cell */
-.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.work-item-wide > img.work-ph{position:relative;width:100%;height:100%;object-fit:cover;display:block}
+/* Slider fills work-item completely */
+.slider{
+  position:absolute;
+  inset:0;
+  overflow:hidden;
+  width:100%;
+  height:100%;
+}
+.slides{
+  display:flex;
+  width:100%;
+  height:100%;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
+.slide{
+  min-width:100%;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  flex-shrink:0;
+  display:block;
+}
 
-/* Fallback work-ph div */
-.work-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.work-item-wide > .work-ph{position:relative}
-.works-pair .work-item > .work-ph{position:absolute;inset:0}
+/* Direct img (no slider wrapper) */
+.work-item > img.work-ph{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
 
-.work-item:hover > img.work-ph,
-.work-item:hover > .work-ph,
+/* Fallback work-ph div (SVG placeholder) */
+.work-ph{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Commission cell — not a media cell, needs normal flow */
+.work-item.commission{
+  position:relative;
+  overflow:visible;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Hover zoom — only on slider/img, not overlay */
 .work-item:hover > .slider{transform:scale(1.04);transition:transform .6s ease}
+.work-item:hover > img.work-ph{transform:scale(1.04);transition:transform .6s ease}
+.work-item:hover > .work-ph{transform:scale(1.04);transition:transform .6s ease}
 
-.work-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);opacity:0;transition:opacity .35s;z-index:2}
+/* Overlay sits ABOVE slider, but pointer-events:none so arrows remain clickable */
+.work-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  padding:1.5rem;
+  background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);
+  opacity:0;
+  transition:opacity .35s;
+  z-index:5;
+  pointer-events:none; /* overlay is visual only — clicks pass through to slider */
+}
+/* Re-enable pointer events on the interactive elements inside overlay */
+.work-overlay a,
+.work-overlay button{pointer-events:auto}
 .work-item:hover .work-overlay{opacity:1}
+
 .work-title{font-family:"Cormorant Garamond",serif;font-size:1.35rem;font-weight:300;color:#fff;margin-bottom:4px}
 .work-meta{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;justify-content:space-between}
-.work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.5);padding:6px 14px;transition:background .2s,border-color .2s}
+.work-buy{
+  display:inline-block;
+  margin-top:10px;
+  font-size:11px;
+  letter-spacing:0.12em;
+  text-transform:uppercase;
+  color:#fff;
+  border:0.5px solid rgba(255,255,255,.5);
+  padding:6px 14px;
+  transition:background .2s,border-color .2s;
+  pointer-events:auto;
+}
 .work-buy:hover{background:rgba(255,255,255,.15);border-color:#fff}
 
-/* ── SLIDER INTERNALS ── */
-.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
-.slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block}
-.slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0.5px solid rgba(255,255,255,0.5);color:#fff;font-family:"Cormorant Garamond",serif;font-size:1.2rem;font-weight:300;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:none;z-index:20;transition:background 0.25s,border-color 0.25s}
-.slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.12);border-color:#fff}
-.slide-prev{left:1.25rem}.slide-next{right:1.25rem}
-.slide-dots{position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:20}
-.slide-dots .dot{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,0.35);transition:background 0.25s,transform 0.25s;cursor:none}
+/* Slider controls — above everything, always clickable */
+.slide-prev,.slide-next{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  background:transparent;
+  border:0.5px solid rgba(255,255,255,0.5);
+  color:#fff;
+  font-family:"Cormorant Garamond",serif;
+  font-size:1.4rem;
+  font-weight:300;
+  width:36px;
+  height:36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10; /* above overlay which is z-index:5 */
+  transition:background 0.25s,border-color 0.25s;
+  cursor:pointer;
+  pointer-events:auto;
+}
+.slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.2);border-color:#fff}
+.slide-prev{left:1rem}.slide-next{right:1rem}
+.slide-dots{
+  position:absolute;
+  bottom:1rem;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+  z-index:10;
+  pointer-events:auto;
+}
+.slide-dots .dot{
+  width:5px;height:5px;
+  border-radius:50%;
+  background:rgba(255,255,255,0.4);
+  transition:background 0.25s,transform 0.25s;
+  cursor:pointer;
+}
 .slide-dots .dot.active{background:#fff;transform:scale(1.4)}
 
 /* ── EDITORIAL ── */
@@ -160,36 +275,64 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   /* Works mobile */
   #works{padding:3rem 0 0}
   .works-header{padding:0 1.25rem 1.5rem}
+
+  /* Switch grid to column */
   .works-grid{display:flex;flex-direction:column}
 
-  /* Reset desktop padding-bottom trick */
-  .work-item{border-right:none;width:100%;height:auto;padding-bottom:0;position:relative}
-  .work-item-wide{grid-column:unset;height:70vh;max-height:none;min-height:280px}
+  /* Reset desktop heights */
+  .work-item{height:auto;max-height:none;min-height:0;overflow:hidden}
 
-  /* Wide solo slider fills the 70vh parent */
-  .work-item-wide > .slider{position:absolute;inset:0;width:100%;height:100%}
+  /* Wide solo: 70vh */
+  .work-item-wide{height:70vh;min-height:260px;max-height:none}
+  .work-item-wide > .slider,
+  .work-item-wide > img.work-ph,
   .work-item-wide > .work-ph{position:absolute;inset:0;width:100%;height:100%}
-  .work-item-wide > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
 
-  /* Pair: side-by-side */
+  /* Pair: side-by-side equal height */
   .works-pair{display:grid;grid-template-columns:1fr 1fr;border-bottom:0.5px solid var(--rule)}
-  .works-pair .work-item{border-bottom:none;border-right:none;width:100%;height:48vh;min-height:180px;padding-bottom:0}
+  .works-pair .work-item{
+    border-bottom:none;
+    border-right:none;
+    height:52vh;
+    min-height:200px;
+    max-height:none;
+    position:relative;
+    overflow:hidden;
+  }
   .works-pair .work-item:first-child{border-right:0.5px solid var(--rule)}
-
-  /* Pair slider and images fill the 48vh parent */
-  .works-pair .work-item > .slider{position:absolute;inset:0;width:100%;height:100%}
+  .works-pair .work-item > .slider,
+  .works-pair .work-item > img.work-ph,
   .works-pair .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
-  .works-pair .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
-  /* Overlay always visible on mobile */
-  .work-overlay{opacity:1;background:linear-gradient(to top,rgba(14,13,11,0.88) 0%,rgba(14,13,11,0.15) 65%,transparent 100%)}
-  .work-title{font-size:1rem}
+  /* Commission cell: needs visible overflow for text */
+  .works-pair .work-item.commission{
+    overflow:visible;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:1.5rem 1rem;
+    gap:.75rem;
+    overflow:hidden;
+  }
+
+  /* Overlay always on */
+  .work-overlay{
+    opacity:1;
+    background:linear-gradient(to top,rgba(14,13,11,0.88) 0%,rgba(14,13,11,0.15) 65%,transparent 100%);
+  }
+  .work-title{font-size:.95rem}
   .work-meta{font-size:10px;flex-direction:column;gap:2px}
-  .work-buy{font-size:10px;padding:5px 12px;margin-top:8px}
+  .work-buy{font-size:10px;padding:5px 10px;margin-top:6px}
 
-  /* Arrows visible and tappable on mobile */
-  .slide-prev,.slide-next{display:flex;width:36px;height:36px;cursor:pointer}
-  .slide-dots{bottom:3.5rem;gap:10px}
+  /* Arrows: visible and tappable on mobile */
+  .slide-prev,.slide-next{
+    display:flex;
+    width:34px;height:34px;
+    cursor:pointer;
+    font-size:1.2rem;
+  }
+  .slide-dots{bottom:3rem;gap:10px}
   .slide-dots .dot{width:6px;height:6px;cursor:pointer}
 
   .editorial{grid-template-columns:1fr}
@@ -300,7 +443,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
     <!-- 2 + 3: pair -->
     <div class="works-pair">
       <div class="work-item reveal">
-        <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph" style="object-fit:cover;width:100%;display:block">
+        <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph">
         <div class="work-overlay">
           <div class="work-title">In Bloom</div>
           <div class="work-meta"><span>Oil on canvas · 30×20×1.5 cm</span><span>€ 700</span></div>
@@ -358,7 +501,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
           <a href="https://buy.stripe.com/YOUR_LINK_HERE" class="work-buy">Purchase directly →</a>
         </div>
       </div>
-      <div class="work-item reveal" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:1rem;background:var(--paper)">
+      <div class="work-item commission reveal" style="background:var(--paper)">
         <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--ghost)">Commission</div>
         <div style="font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;text-align:center;line-height:1.2">A work<br><em>made for you</em></div>
         <p style="font-size:11px;color:var(--ghost);text-align:center;max-width:160px;line-height:1.8">Discuss size, palette, and intention.</p>
