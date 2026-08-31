@@ -51,84 +51,95 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
 .works-count{font-family:"Cormorant Garamond",serif;font-size:1.5rem;font-weight:300;color:var(--ghost)}
 
-/* ── DESKTOP: 3-col grid ── */
-.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr;grid-template-rows:42vw auto 42vw auto}
+/* Desktop 3-col grid. works-pair is display:contents — invisible to grid */
+.works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
 .works-pair{display:contents}
+
 .work-item{
   position:relative;
   overflow:hidden;
   border-right:0.5px solid var(--rule);
   border-bottom:0.5px solid var(--rule);
 }
-.work-item-wide{grid-column:span 2;height:100%}
-.works-pair .work-item{height:54vw;max-height:700px;min-height:340px}
+.work-item-wide{grid-column:span 2}
 .works-pair:first-of-type .work-item:last-child,
 .works-pair:last-of-type .work-item:last-child{border-right:none}
 
-/* Commission cell — needs flex layout not overflow:hidden */
+/* Heights: wide=aspect-ratio 16/7, pair=aspect-ratio 4/5 */
+.work-item-wide{aspect-ratio:16/7}
+.works-pair .work-item:not(.commission){aspect-ratio:4/5}
 .work-item.commission{
-  overflow:visible;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:1rem;
-  padding:2.5rem 1.5rem;
-  background:var(--paper);
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:1rem;padding:2.5rem 1.5rem;
+  background:var(--paper);overflow:visible;
 }
 
-/* Slider fills work-item completely */
-.slider{position:absolute;inset:0;overflow:hidden;width:100%;height:100%}
-.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+/* Slider fills work-item */
+.slider{position:absolute;inset:0;overflow:hidden}
+
+/* slides: full size, no overflow */
+.slides{
+  display:flex;
+  width:100%;height:100%;
+  transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);
+}
 .slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block}
 
 /* Direct img */
 .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 
-/* SVG placeholder */
-.work-ph{position:absolute;inset:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+/* SVG placeholder div */
+.work-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 
-/* Hover: zoom only the image content, not the controls */
+/* Hover: zoom .slides only — arrows and overlay stay put */
 .work-item:not(.commission):hover .slides{transform:scale(1.04);transition:transform .6s ease}
 .work-item:not(.commission):hover > img.work-ph{transform:scale(1.04);transition:transform .6s ease}
-.work-item:not(.commission):hover > .work-ph{transform:scale(1.04);transition:transform .6s ease}
+.slides{transform-origin:center center;will-change:transform}
 
-/* Overlay: pointer-events:none so arrows stay clickable */
+/* Overlay: pointer-events:none so arrows are always clickable */
 .work-overlay{
   position:absolute;inset:0;
   display:flex;flex-direction:column;justify-content:flex-end;
   padding:1.5rem;
-  background:linear-gradient(to top,rgba(14,13,11,0.78) 0%,transparent 55%);
+  background:linear-gradient(to top,rgba(14,13,11,0.82) 0%,rgba(14,13,11,0.4) 35%,transparent 60%);
   opacity:0;transition:opacity .35s;
-  z-index:5;
-  pointer-events:none;
+  z-index:5;pointer-events:none;
 }
 .work-overlay a,.work-overlay button{pointer-events:auto}
 .work-item:hover .work-overlay{opacity:1}
 .work-title{font-family:"Cormorant Garamond",serif;font-size:1.35rem;font-weight:300;color:#fff;margin-bottom:4px}
-.work-meta{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.6);display:flex;justify-content:space-between}
-.work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.5);padding:6px 14px;transition:background .2s,border-color .2s;pointer-events:auto}
-.work-buy:hover{background:rgba(255,255,255,.15);border-color:#fff}
+.work-meta{font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:rgba(255,255,255,.7);display:flex;justify-content:space-between}
+.work-buy{
+  display:inline-block;margin-top:10px;
+  font-size:11px;letter-spacing:0.12em;text-transform:uppercase;
+  color:#fff;border:0.5px solid rgba(255,255,255,.6);
+  padding:6px 14px;transition:background .2s,border-color .2s;pointer-events:auto;
+}
+.work-buy:hover{background:rgba(255,255,255,.18);border-color:#fff}
 
-/* Slider controls — z-index above overlay */
+/* Slider arrows — z-index:10 (above overlay z-index:5) */
 .slide-prev,.slide-next{
   position:absolute;top:50%;transform:translateY(-50%);
-  background:transparent;border:0.5px solid rgba(255,255,255,0.5);
+  background:transparent;border:0.5px solid rgba(255,255,255,0.55);
   color:#fff;font-family:"Cormorant Garamond",serif;
   font-size:1.4rem;font-weight:300;
   width:36px;height:36px;
   display:flex;align-items:center;justify-content:center;
   z-index:10;cursor:pointer;pointer-events:auto;
-  transition:background 0.25s,border-color 0.25s;
+  transition:background 0.2s,border-color 0.2s;
 }
-.slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.2);border-color:#fff}
+.slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.18);border-color:#fff}
 .slide-prev{left:1rem}.slide-next{right:1rem}
+
+/* Dots — sit well below arrows, above overlay */
 .slide-dots{
-  position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);
+  position:absolute;
+  bottom:1.5rem;   /* below the arrows area */
+  left:50%;transform:translateX(-50%);
   display:flex;gap:8px;z-index:10;pointer-events:auto;
 }
-.slide-dots .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4);transition:background 0.25s,transform 0.25s;cursor:pointer}
-.slide-dots .dot.active{background:#fff;transform:scale(1.4)}
+.slide-dots .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4);transition:background 0.2s,transform 0.2s;cursor:pointer}
+.slide-dots .dot.active{background:#fff;transform:scale(1.5)}
 
 /* ── EDITORIAL ── */
 .editorial{display:grid;grid-template-columns:1fr 1fr;border-top:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule);min-height:55vh}
@@ -189,61 +200,72 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .hero-num{font-size:3rem}
   .ticker-item{padding:0 1.5rem;font-size:10px}
 
-  /* ── WORKS MOBILE ── 
-     Single column, all artworks full width, consistent height.
-     No side-by-side pairs — works-pair becomes a normal block column. */
-  #works{padding:2.5rem 0 0}
+  /* ── WORKS MOBILE ──
+     Single full-width column. Every artwork 55vh. No pairs side-by-side. */
+  #works{padding:2rem 0 0}
   .works-header{padding:0 1.25rem 1.5rem}
 
-  /* Switch to single column */
+  /* Single column */
   .works-grid{display:flex;flex-direction:column;grid-template-rows:unset}
   .works-pair{display:flex;flex-direction:column}
 
-  /* Every work-item: full width, consistent 65vw height */
+  /* Every artwork: full width, 55vh tall */
   .work-item{
     width:100%;
-    height:65vw;
-    min-height:220px;
-    max-height:380px;
+    height:55vh;
+    min-height:240px;
+    max-height:none;
+    aspect-ratio:unset;
     border-right:none;
     border-bottom:0.5px solid var(--rule);
     overflow:hidden;
     position:relative;
   }
-  .work-item-wide{height:65vw;min-height:220px;max-height:380px}
+  .work-item-wide{
+    height:55vh;
+    min-height:240px;
+    aspect-ratio:unset;
+  }
 
-  /* All sliders and images fill their parent */
-  .slider{position:absolute;inset:0;width:100%;height:100%}
-  .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  /* Commission: auto height, enough for text */
+  .work-item.commission{
+    height:auto;
+    min-height:200px;
+    overflow:hidden;
+    padding:2rem 1.25rem;
+    gap:.75rem;
+  }
+
+  /* Slider and images fill parent */
+  .slider{position:absolute;inset:0;overflow:hidden;width:100%;height:100%}
+  .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
 
-  /* Commission cell */
-  .work-item.commission{
-    overflow:hidden;
-    height:auto;
-    min-height:180px;
-    max-height:none;
-    display:flex;flex-direction:column;
-    align-items:center;justify-content:center;
-    padding:2.5rem 1.5rem;
-    gap:.75rem;
-    position:relative;
-  }
-
-  /* Overlay always visible on mobile */
+  /* Overlay always visible — enough gradient for text + button */
   .work-overlay{
     opacity:1;
-    background:linear-gradient(to top,rgba(14,13,11,0.85) 0%,rgba(14,13,11,0.1) 60%,transparent 100%);
+    padding:1.25rem;
+    background:linear-gradient(to top,rgba(14,13,11,0.92) 0%,rgba(14,13,11,0.6) 40%,transparent 75%);
   }
-  .work-title{font-size:1.1rem}
-  .work-meta{font-size:11px;flex-direction:row;gap:0;justify-content:space-between}
-  .work-buy{font-size:11px;padding:6px 14px;margin-top:8px}
+  .work-title{font-size:1.1rem;margin-bottom:3px}
+  .work-meta{font-size:10px;flex-direction:column;gap:2px;margin-bottom:0}
+  .work-buy{
+    font-size:10px;padding:5px 12px;margin-top:8px;
+    display:inline-block;width:auto;
+  }
 
-  /* Arrows: show on mobile, tappable */
-  .slide-prev,.slide-next{display:flex;width:38px;height:38px;cursor:pointer;font-size:1.3rem}
+  /* Arrows: visible and tappable */
+  .slide-prev,.slide-next{
+    display:flex;width:36px;height:36px;cursor:pointer;font-size:1.2rem;
+  }
 
-  /* Dots: push well below the purchase button */
-  .slide-dots{bottom:auto;top:1rem;transform:translateX(-50%)}
+  /* Dots: top of image, never overlapping text */
+  .slide-dots{
+    bottom:auto;
+    top:0.875rem;
+    left:50%;
+    transform:translateX(-50%);
+  }
   .slide-dots .dot{width:6px;height:6px;cursor:pointer}
 
   .editorial{grid-template-columns:1fr}
