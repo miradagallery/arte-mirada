@@ -45,7 +45,13 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .ticker-sep{color:var(--warm-mid);padding:0;align-self:center;font-size:8px}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
-/* WORKS DESKTOP */
+/* ── WORKS DESKTOP ──
+   Heights calculated from column widths:
+   - Grid: 3 equal cols = 33.33vw each
+   - Wide item: spans 2 cols = 66.67vw. At 16:7 ratio → height = 66.67 × 7/16 = 29.17vw
+   - Pair item: 1 col = 33.33vw. At 4:5 ratio → height = 33.33 × 5/4 = 41.67vw
+   - All children position:absolute so we MUST set explicit height on work-item.
+   - Hover zoom handled entirely by JS (avoids CSS/JS transform conflict). */
 #works{padding:5rem 0 0}
 .works-header{padding:0 2.5rem 3rem;display:flex;justify-content:space-between;align-items:baseline;border-bottom:0.5px solid var(--rule)}
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
@@ -53,24 +59,20 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
 .works-pair{display:contents}
 .work-item{position:relative;overflow:hidden;border-right:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule)}
-.work-item-wide{grid-column:span 2;aspect-ratio:16/7}
-.works-pair .work-item:not(.commission){aspect-ratio:4/5}
+.work-item-wide{grid-column:span 2;height:29vw;min-height:260px}
+.works-pair .work-item:not(.commission){height:42vw;min-height:320px}
+.works-pair .work-item.commission{height:42vw;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2.5rem 1.5rem;background:var(--paper)}
 .works-pair:first-of-type .work-item:last-child,
 .works-pair:last-of-type .work-item:last-child{border-right:none}
-.work-item.commission{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2.5rem 1.5rem;background:var(--paper);overflow:visible}
 
-/* Slider fills work-item */
+/* Slider */
 .slider{position:absolute;inset:0;overflow:hidden}
-.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1);transform-origin:center center}
-.slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block}
-.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
+.slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block;transition:transform 0.6s ease;transform-origin:center center}
+.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;transform-origin:center center}
 .work-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 
-/* Hover: only .slides and direct img zoom — never the controls */
-.work-item:not(.commission):hover .slides{transform:scale(1.04)}
-.work-item:not(.commission):hover > img.work-ph{transform:scale(1.04)}
-
-/* Overlay: pointer-events:none so arrows stay clickable always */
+/* Overlay: pointer-events:none — clicks pass through to arrows */
 .work-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.9) 0%,rgba(14,13,11,0.5) 35%,transparent 65%);opacity:0;transition:opacity .35s;z-index:5;pointer-events:none}
 .work-item:hover .work-overlay{opacity:1}
 .work-overlay *{pointer-events:auto}
@@ -79,12 +81,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.6);padding:6px 14px;transition:background .2s,border-color .2s}
 .work-buy:hover{background:rgba(255,255,255,.18);border-color:#fff}
 
-/* Arrows: z-index:10, above overlay z-index:5 */
+/* Arrows: z-index 10, always above overlay */
 .slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0.5px solid rgba(255,255,255,0.55);color:#fff;font-family:"Cormorant Garamond",serif;font-size:1.4rem;font-weight:300;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:10;cursor:pointer;transition:background 0.2s,border-color 0.2s}
 .slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.18);border-color:#fff}
 .slide-prev{left:1rem}.slide-next{right:1rem}
-
-/* Dots: bottom of image, above overlay, not overlapping button */
 .slide-dots{position:absolute;bottom:0.75rem;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10}
 .slide-dots .dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.4);transition:background 0.2s,transform 0.2s;cursor:pointer}
 .slide-dots .dot.active{background:#fff;transform:scale(1.5)}
@@ -123,7 +123,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 .reveal{opacity:0;transform:translateY(28px);transition:opacity .7s,transform .7s}
 .reveal.in{opacity:1;transform:translateY(0)}
 
-/* MOBILE */
+/* ── MOBILE ── */
 @media(max-width:860px){
   body{cursor:auto}
   #cursor{display:none}
@@ -143,16 +143,35 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   .works-header{padding:0 1.25rem 1.5rem}
   .works-grid{display:flex;flex-direction:column}
   .works-pair{display:flex;flex-direction:column}
-  .work-item{width:100%;height:55vh;min-height:240px;aspect-ratio:unset !important;border-right:none;border-bottom:0.5px solid var(--rule);overflow:hidden;position:relative}
-  .work-item-wide{height:55vh;min-height:240px;aspect-ratio:unset !important}
-  .work-item.commission{height:auto;min-height:210px;overflow:hidden;padding:2rem 1.25rem;gap:.75rem;aspect-ratio:unset !important;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .work-item{
+    width:100% !important;
+    height:70vh !important;
+    min-height:340px !important;
+    max-height:none !important;
+    border-right:none !important;
+    border-bottom:0.5px solid var(--rule) !important;
+    overflow:hidden !important;
+    position:relative !important;
+    grid-column:unset !important;
+    display:block !important;
+  }
+  .work-item.commission{
+    height:auto !important;
+    min-height:220px !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    padding:2.5rem 1.25rem !important;
+    gap:.75rem !important;
+  }
   .slider{position:absolute;inset:0;overflow:hidden;width:100%;height:100%}
   .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
   .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
-  .work-overlay{opacity:1;padding:1.25rem;background:linear-gradient(to top,rgba(14,13,11,0.95) 0%,rgba(14,13,11,0.65) 30%,rgba(14,13,11,0.1) 60%,transparent 100%)}
-  .work-title{font-size:1.05rem;margin-bottom:2px}
-  .work-meta{font-size:10px;flex-direction:column;gap:1px}
-  .work-buy{font-size:10px;padding:5px 12px;margin-top:6px}
+  .work-overlay{opacity:1;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.95) 0%,rgba(14,13,11,0.6) 28%,transparent 55%)}
+  .work-title{font-size:1.1rem;margin-bottom:4px}
+  .work-meta{font-size:11px;flex-direction:column;gap:2px}
+  .work-buy{font-size:11px;padding:6px 14px;margin-top:8px}
   .slide-prev,.slide-next{display:flex;width:36px;height:36px;cursor:pointer;font-size:1.2rem}
   .slide-dots{bottom:auto;top:0.75rem;left:50%;transform:translateX(-50%);gap:10px}
   .slide-dots .dot{width:6px;height:6px;cursor:pointer}
@@ -177,7 +196,6 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
 }
 @media(max-width:400px){
   .hero-title{font-size:2.5rem}
-  .work-item,.work-item-wide{height:60vw;min-height:200px}
 }
 </style>
 </head>
@@ -402,7 +420,26 @@ let mx=0,my=0,cx=0,cy=0;
 document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY});
 (function anim(){cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;cur.style.left=cx+"px";cur.style.top=cy+"px";requestAnimationFrame(anim)})();
 function setCursor(s){cur.classList.remove("hover","drag","sharp");if(s)cur.classList.add(s)}
-document.querySelectorAll(".work-item,.hero-right,.editorial-img").forEach(el=>{
+
+// Hover zoom: applied via JS to individual images so it never conflicts
+// with the JS translateX applied to .slides
+document.querySelectorAll(".work-item:not(.commission)").forEach(item=>{
+  item.addEventListener("mouseenter",()=>{
+    setCursor("drag");
+    // Scale every slide image and direct img inside this item
+    item.querySelectorAll(".slide, img.work-ph").forEach(img=>{
+      img.style.transform="scale(1.04)";
+    });
+  });
+  item.addEventListener("mouseleave",()=>{
+    setCursor(null);
+    item.querySelectorAll(".slide, img.work-ph").forEach(img=>{
+      img.style.transform="scale(1)";
+    });
+  });
+});
+
+document.querySelectorAll(".hero-right,.editorial-img").forEach(el=>{
   el.addEventListener("mouseenter",()=>setCursor("drag"));
   el.addEventListener("mouseleave",()=>setCursor(null));
 });
@@ -414,17 +451,19 @@ document.querySelectorAll(".slide-prev,.slide-next,.work-buy").forEach(el=>{
   el.addEventListener("mouseenter",()=>setCursor("sharp"));
   el.addEventListener("mouseleave",()=>setCursor(null));
 });
+
 const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("in")});
 },{threshold:0.1});
 document.querySelectorAll(".reveal").forEach(el=>obs.observe(el));
+
 document.querySelectorAll(".slider").forEach(slider=>{
-  const slides=slider.querySelector(".slides");
-  const imgs=slider.querySelectorAll(".slide");
+  const slidesEl=slider.querySelector(".slides");
+  const allSlides=slider.querySelectorAll(".slide");
   const dotsWrap=slider.querySelector(".slide-dots");
-  const total=imgs.length;
+  const total=allSlides.length;
   let current=0;
-  imgs.forEach((_,i)=>{
+  allSlides.forEach((_,i)=>{
     const d=document.createElement("div");
     d.classList.add("dot");
     if(i===0)d.classList.add("active");
@@ -433,7 +472,8 @@ document.querySelectorAll(".slider").forEach(slider=>{
   });
   function goTo(n){
     current=(n+total)%total;
-    slides.style.transform="translateX(-"+current*100+"%)";
+    // Only set translateX — scale is on the individual .slide elements and is unaffected
+    slidesEl.style.transform="translateX(-"+current*100+"%)";
     slider.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i===current));
   }
   slider.querySelector(".slide-prev").addEventListener("click",e=>{e.stopPropagation();goTo(current-1)});
