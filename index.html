@@ -46,12 +46,11 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 
 /* ── WORKS DESKTOP ──
-   Heights calculated from column widths:
-   - Grid: 3 equal cols = 33.33vw each
-   - Wide item: spans 2 cols = 66.67vw. At 16:7 ratio → height = 66.67 × 7/16 = 29.17vw
-   - Pair item: 1 col = 33.33vw. At 4:5 ratio → height = 33.33 × 5/4 = 41.67vw
-   - All children position:absolute so we MUST set explicit height on work-item.
-   - Hover zoom handled entirely by JS (avoids CSS/JS transform conflict). */
+   Wide item = spans 2 of 3 cols = 66.67vw wide.
+   Pair item = 1 of 3 cols = 33.33vw wide.
+   To make rows feel balanced, wide height should visually match pair row.
+   We make both rows 42vw tall. Wide items just have a wider aspect.
+*/
 #works{padding:5rem 0 0}
 .works-header{padding:0 2.5rem 3rem;display:flex;justify-content:space-between;align-items:baseline;border-bottom:0.5px solid var(--rule)}
 .section-label{font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ghost)}
@@ -59,20 +58,58 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .works-grid{display:grid;grid-template-columns:1fr 1fr 1fr}
 .works-pair{display:contents}
 .work-item{position:relative;overflow:hidden;border-right:0.5px solid var(--rule);border-bottom:0.5px solid var(--rule)}
-.work-item-wide{grid-column:span 2;height:29vw;min-height:260px}
+
+/* Both rows same height = 42vw. Wide items just span 2 cols. */
+.work-item-wide{grid-column:span 2;height:42vw;min-height:320px}
 .works-pair .work-item:not(.commission){height:42vw;min-height:320px}
-.works-pair .work-item.commission{height:42vw;min-height:320px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;padding:2.5rem 1.5rem;background:var(--paper)}
+.works-pair .work-item.commission{
+  height:42vw;min-height:320px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:1rem;padding:2.5rem 1.5rem;background:var(--paper);
+}
 .works-pair:first-of-type .work-item:last-child,
 .works-pair:last-of-type .work-item:last-child{border-right:none}
 
-/* Slider */
+/* Slider fills work-item */
 .slider{position:absolute;inset:0;overflow:hidden}
 .slides{display:flex;width:100%;height:100%;transition:transform 0.5s cubic-bezier(0.4,0,0.2,1)}
-.slide{min-width:100%;width:100%;height:100%;object-fit:cover;object-position:center;flex-shrink:0;display:block;transition:transform 0.6s ease;transform-origin:center center}
-.work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;transform-origin:center center}
+
+/* Each slide is a viewport — overflow:hidden keeps zoom contained to that slide */
+.slide{
+  position:relative;
+  min-width:100%;width:100%;height:100%;
+  flex-shrink:0;
+  overflow:hidden; /* clips the zoom to THIS slide only */
+}
+/* The actual image inside the slide — this is what zooms */
+.slide-img{
+  width:100%;height:100%;
+  object-fit:cover;object-position:center;
+  display:block;
+  transition:transform 0.6s ease;
+  transform-origin:center center;
+}
+/* picture element fills slide */
+.slide picture{display:block;width:100%;height:100%}
+.slide picture img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.6s ease;transform-origin:center center}
+
+/* Direct img.work-ph (non-slider items) */
+.work-item > img.work-ph{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:transform 0.6s ease;transform-origin:center center;
+}
+/* Direct picture.work-ph (non-slider items with responsive image) */
+.work-item > picture.work-ph{
+  position:absolute;inset:0;display:block;
+}
+.work-item > picture.work-ph img{
+  width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform 0.6s ease;transform-origin:center center;
+}
 .work-ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
 
-/* Overlay: pointer-events:none — clicks pass through to arrows */
+/* Overlay */
 .work-overlay{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:flex-end;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.9) 0%,rgba(14,13,11,0.5) 35%,transparent 65%);opacity:0;transition:opacity .35s;z-index:5;pointer-events:none}
 .work-item:hover .work-overlay{opacity:1}
 .work-overlay *{pointer-events:auto}
@@ -81,7 +118,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 .work-buy{display:inline-block;margin-top:10px;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:#fff;border:0.5px solid rgba(255,255,255,.6);padding:6px 14px;transition:background .2s,border-color .2s}
 .work-buy:hover{background:rgba(255,255,255,.18);border-color:#fff}
 
-/* Arrows: z-index 10, always above overlay */
+/* Arrows: z-index 10 above overlay */
 .slide-prev,.slide-next{position:absolute;top:50%;transform:translateY(-50%);background:transparent;border:0.5px solid rgba(255,255,255,0.55);color:#fff;font-family:"Cormorant Garamond",serif;font-size:1.4rem;font-weight:300;width:36px;height:36px;display:flex;align-items:center;justify-content:center;z-index:10;cursor:pointer;transition:background 0.2s,border-color 0.2s}
 .slide-prev:hover,.slide-next:hover{background:rgba(255,255,255,0.18);border-color:#fff}
 .slide-prev{left:1rem}.slide-next{right:1rem}
@@ -166,7 +203,9 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
     gap:.75rem !important;
   }
   .slider{position:absolute;inset:0;overflow:hidden;width:100%;height:100%}
-  .work-item > img.work-ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .work-item > img.work-ph,
+  .work-item > picture.work-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+  .work-item > picture.work-ph{position:absolute;inset:0}
   .work-item > .work-ph{position:absolute;inset:0;width:100%;height:100%}
   .work-overlay{opacity:1;padding:1.5rem;background:linear-gradient(to top,rgba(14,13,11,0.95) 0%,rgba(14,13,11,0.6) 28%,transparent 55%)}
   .work-title{font-size:1.1rem;margin-bottom:4px}
@@ -254,12 +293,37 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
   </div>
   <div class="works-grid">
 
+    <!-- 1: WIDE — separate mobile/desktop images via <picture> -->
     <div class="work-item work-item-wide reveal">
       <div class="slider">
         <div class="slides">
-          <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="slide">
-          <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
-          <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide">
+
+          <!-- Slide 1: main image — REPLACE sources with your files -->
+          <div class="slide">
+            <picture>
+              <!-- Mobile portrait version (shown on screens ≤860px) -->
+              <source media="(max-width: 860px)" srcset="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg">
+              <!-- Desktop landscape version -->
+              <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_2026.jpg" class="slide-img" alt="I AM by Fernanda Biagi">
+            </picture>
+          </div>
+
+          <!-- Slide 2: detail — add your detail image here -->
+          <div class="slide">
+            <picture>
+              <source media="(max-width: 860px)" srcset="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg">
+              <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide-img" alt="I AM detail">
+            </picture>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="slide">
+            <picture>
+              <source media="(max-width: 860px)" srcset="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg">
+              <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_2_2026.jpg" class="slide-img" alt="I AM detail 2">
+            </picture>
+          </div>
+
         </div>
         <button class="slide-prev">&#8249;</button>
         <button class="slide-next">&#8250;</button>
@@ -272,9 +336,10 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
       </div>
     </div>
 
+    <!-- 2 + 3: pair — single images, no picture needed (portrait works fine both) -->
     <div class="works-pair">
       <div class="work-item reveal">
-        <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph">
+        <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="work-ph" alt="In Bloom">
         <div class="work-overlay">
           <div class="work-title">In Bloom</div>
           <div class="work-meta"><span>Oil on canvas · 30×20×1.5 cm</span><span>€ 700</span></div>
@@ -284,8 +349,12 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
       <div class="work-item reveal">
         <div class="slider">
           <div class="slides">
-            <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="slide">
-            <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide">
+            <div class="slide">
+              <img src="Mirada_Gallery_In_Bloom_(POP)_2026_Full.jpg" class="slide-img" alt="Lucky">
+            </div>
+            <div class="slide">
+              <img src="Mirada_Gallery_by_Fernanda_Biagi_l_AM_detail_1_2026.jpg" class="slide-img" alt="Lucky detail">
+            </div>
           </div>
           <button class="slide-prev">&#8249;</button>
           <button class="slide-next">&#8250;</button>
@@ -299,14 +368,33 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
       </div>
     </div>
 
+    <!-- 4: WIDE — separate mobile/desktop images via <picture> -->
     <div class="work-item work-item-wide reveal">
-      <div class="work-ph" style="background:#8C8880">
-        <svg viewBox="0 0 900 350" width="100%" xmlns="http://www.w3.org/2000/svg">
-          <line x1="100" y1="100" x2="800" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-          <line x1="800" y1="100" x2="100" y2="250" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
-          <circle cx="450" cy="175" r="100" stroke="rgba(255,255,255,0.18)" stroke-width="1" fill="rgba(255,255,255,0.05)"/>
-          <circle cx="450" cy="175" r="45" fill="rgba(255,255,255,0.09)"/>
-        </svg>
+      <div class="slider">
+        <div class="slides">
+
+          <!-- Slide 1: REPLACE with your actual artwork 4 files -->
+          <div class="slide">
+            <picture>
+              <!-- Mobile portrait version -->
+              <source media="(max-width: 860px)" srcset="YOUR_ARTWORK4_MOBILE.jpg">
+              <!-- Desktop landscape version -->
+              <img src="YOUR_ARTWORK4_DESKTOP.jpg" class="slide-img" alt="Noche Sin Fin by Fernanda Biagi">
+            </picture>
+          </div>
+
+          <!-- Slide 2: detail -->
+          <div class="slide">
+            <picture>
+              <source media="(max-width: 860px)" srcset="YOUR_ARTWORK4_DETAIL_MOBILE.jpg">
+              <img src="YOUR_ARTWORK4_DETAIL_DESKTOP.jpg" class="slide-img" alt="Noche Sin Fin detail">
+            </picture>
+          </div>
+
+        </div>
+        <button class="slide-prev">&#8249;</button>
+        <button class="slide-next">&#8250;</button>
+        <div class="slide-dots"></div>
       </div>
       <div class="work-overlay">
         <div class="work-title">Noche Sin Fin</div>
@@ -315,6 +403,7 @@ footer{padding:1.5rem 2.5rem;display:flex;justify-content:space-between;align-it
       </div>
     </div>
 
+    <!-- 5 + 6: pair -->
     <div class="works-pair">
       <div class="work-item reveal">
         <div class="work-ph" style="background:#96614A">
@@ -421,21 +510,31 @@ document.addEventListener("mousemove",e=>{mx=e.clientX;my=e.clientY});
 (function anim(){cx+=(mx-cx)*0.18;cy+=(my-cy)*0.18;cur.style.left=cx+"px";cur.style.top=cy+"px";requestAnimationFrame(anim)})();
 function setCursor(s){cur.classList.remove("hover","drag","sharp");if(s)cur.classList.add(s)}
 
-// Hover zoom: applied via JS to individual images so it never conflicts
-// with the JS translateX applied to .slides
+// Hover zoom: scale the CURRENT slide's img only (not all slides)
+// Each .slide has overflow:hidden so zoom is clipped to that slide's bounds
+// .slides moves via translateX — completely separate element, no conflict
 document.querySelectorAll(".work-item:not(.commission)").forEach(item=>{
+  function getCurrentSlideImgs(item){
+    const slider=item.querySelector(".slider");
+    if(!slider) return item.querySelectorAll("img.work-ph, picture.work-ph img");
+    const slides=slider.querySelectorAll(".slide");
+    const slidesEl=slider.querySelector(".slides");
+    // Parse current translateX to find active slide index
+    const t=slidesEl.style.transform||"";
+    const match=t.match(/translateX\(-?(\d+)%\)/);
+    const idx=match?Math.round(parseInt(match[1])/100):0;
+    const activeSlide=slides[idx];
+    if(!activeSlide) return [];
+    return activeSlide.querySelectorAll("img");
+  }
   item.addEventListener("mouseenter",()=>{
     setCursor("drag");
-    // Scale every slide image and direct img inside this item
-    item.querySelectorAll(".slide, img.work-ph").forEach(img=>{
-      img.style.transform="scale(1.04)";
-    });
+    getCurrentSlideImgs(item).forEach(img=>img.style.transform="scale(1.06)");
   });
   item.addEventListener("mouseleave",()=>{
     setCursor(null);
-    item.querySelectorAll(".slide, img.work-ph").forEach(img=>{
-      img.style.transform="scale(1)";
-    });
+    // Reset all slide imgs (in case we missed one)
+    item.querySelectorAll(".slide img, img.work-ph, picture.work-ph img").forEach(img=>img.style.transform="scale(1)");
   });
 });
 
@@ -463,6 +562,8 @@ document.querySelectorAll(".slider").forEach(slider=>{
   const dotsWrap=slider.querySelector(".slide-dots");
   const total=allSlides.length;
   let current=0;
+  const item=slider.closest(".work-item");
+
   allSlides.forEach((_,i)=>{
     const d=document.createElement("div");
     d.classList.add("dot");
@@ -470,12 +571,19 @@ document.querySelectorAll(".slider").forEach(slider=>{
     d.addEventListener("click",e=>{e.stopPropagation();goTo(i)});
     dotsWrap.appendChild(d);
   });
+
   function goTo(n){
+    // Reset old slide's zoom
+    allSlides[current].querySelectorAll("img").forEach(img=>img.style.transform="scale(1)");
     current=(n+total)%total;
-    // Only set translateX — scale is on the individual .slide elements and is unaffected
     slidesEl.style.transform="translateX(-"+current*100+"%)";
     slider.querySelectorAll(".dot").forEach((d,i)=>d.classList.toggle("active",i===current));
+    // If item is currently hovered, zoom the new current slide
+    if(item.matches(":hover")){
+      allSlides[current].querySelectorAll("img").forEach(img=>img.style.transform="scale(1.06)");
+    }
   }
+
   slider.querySelector(".slide-prev").addEventListener("click",e=>{e.stopPropagation();goTo(current-1)});
   slider.querySelector(".slide-next").addEventListener("click",e=>{e.stopPropagation();goTo(current+1)});
   let startX=0;
