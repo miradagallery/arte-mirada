@@ -260,46 +260,44 @@ footer{border-top:0.5px solid var(--rule);padding:5rem 2.5rem 2rem;display:flex;
   </div>
   <div class="works-grid">
 
-    <!-- 1 · I AM (wide) -->
+    <!-- 1: WIDE — separate mobile/desktop images via <picture> -->
     <div class="work-item work-item-wide reveal">
       <div class="slider">
         <div class="slides">
+
+          <!-- Slide 1: main image — REPLACE sources with your files -->
           <div class="slide">
             <picture>
-            <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile.jpg">
-            <source media="(max-width: 860px)" srcset="Mirada_Fernanda_Biagi_l_AM_2026_mobile.jpg">
+              <!-- Mobile portrait version (shown on screens ≤860px) -->
+              <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_2.jpg">
+              <!-- Desktop landscape version -->
               <img src="Mirada_Fernanda_Biagi_l_AM_2026.jpg" class="slide-img" alt="I AM by Fernanda Biagi">
             </picture>
           </div>
+
+          <!-- Slide 2: detail — add your detail image here -->
           <div class="slide">
             <picture>
-            <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_1.jpg">
-              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_1.jpg" class="slide-img" alt="I AM, detail 1">
+              <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_2.1.jpg">
+              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_1.jpg" class="slide-img" alt="I AM detail">
             </picture>
           </div>
+
+          <!-- Slide 3 -->
           <div class="slide">
             <picture>
-            <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_2.jpg">
-              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_2.jpg" class="slide-img" alt="I AM, detail 2">
+              <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_3.jpg">
+              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_2.jpg" class="slide-img" alt="I AM detail 2">
             </picture>
           </div>
+           
+          <!-- Slide 4 -->
           <div class="slide">
             <picture>
-            <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_3.jpg">
-              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_3.jpg" class="slide-img" alt="I AM, detail 3">
+              <source media="(max-width: 860px)" srcset="Mirada_by_Fernanda_Biagi_l_AM_2026_mobile_4.jpg">
+              <img src="Mirada_by_Fernanda_Biagi_l_AM_2026_desktop_3.jpg" class="slide-img" alt="I AM detail 3">
             </picture>
           </div>
-        </div>
-        <button class="slide-prev" aria-label="Previous image">&#8249;</button>
-        <button class="slide-next" aria-label="Next image">&#8250;</button>
-        <div class="slide-dots"></div>
-      </div>
-      <div class="work-overlay">
-        <div class="work-title">I AM</div>
-        <div class="work-meta"><span>Oil on canvas · 3 × 30×20×1.5 cm</span><span>€ 2,000</span></div>
-        <a href="https://buy.stripe.com/bJeeVc0BecqvcGoc3zdZ600" class="work-buy">Purchase directly →</a>
-      </div>
-    </div>
 
     <!-- 2 · 111 (single) -->
     <div class="work-item reveal">
@@ -477,8 +475,8 @@ footer{border-top:0.5px solid var(--rule);padding:5rem 2.5rem 2rem;display:flex;
 
 <section class="connect" id="connect">
   <div class="connect-left">
-    <p class="connect-label">Let's keep in touch</p>
-    <h2 class="connect-title">Come say<br><em>hola</em></h2>
+    <p class="connect-label">Stay close to the work</p>
+    <h2 class="connect-title">Follow the<br><em>process</em></h2>
   </div>
   <div class="connect-right">
     <a href="https://instagram.com/mirada_fbiagi" target="_blank" rel="noopener" class="connect-channel">
